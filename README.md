@@ -1,5 +1,7 @@
 ## JGo Web
 
+- **Port**: Port to bind to
+- **EnableSessions**: Set JGoSession cookie
 - **TemplateDirectory**: Go HTML templates
 - **StaticDirectory**: Static assets
 - **Routes**: Custom endpoints
@@ -16,9 +18,9 @@ import (
 func main() {
     server := web.Server{
         Port: 80,
+        EnableSessions: true,
         TemplateDirectory: "templates",
         StaticDirectory: "public",
-        EnableSessions: true,
         Routes: []web.Route{{
             Pattern: "/hello",
             Handler: func(r *web.Request) {
