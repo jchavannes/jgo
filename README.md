@@ -18,6 +18,7 @@ func main() {
         Port: 80,
         TemplateDirectory: "templates",
         StaticDirectory: "public",
+        EnableSessions: true,
         Routes: []web.Route{{
             Pattern: "/hello",
             Handler: func(r *web.Request) {
