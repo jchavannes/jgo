@@ -32,8 +32,8 @@ func (s *Server) Run() {
 			if s.EnableSessions {
 				request.InitSession()
 			}
-			if route.CsrfProtect {
-
+			if route.CsrfProtect && ! request.IsCsrfPresentAndValid() {
+				return
 			}
 			route.Handler(&request)
 			fmt.Printf("Handled request: %#v\n", r.URL.Path)
@@ -63,7 +63,7 @@ func (s *Server) addTemplatesRoute() {
 				renderer.Render([]string{
 					filename + ".html",
 					"404.html",
-				}, r.HttpResponseWriter, nil)
+				}, r.HttpResponseWriter, r)
 			},
 		})
 	}

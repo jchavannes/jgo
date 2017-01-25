@@ -14,9 +14,29 @@ type Request struct {
 	Session            Session
 }
 
+func (r *Request) IsCsrfPresentAndValid() bool {
+	if r.HttpRequest.Method != "POST" {
+		return false
+	}
+	csrfToken := r.GetFormValue("csrf-token")
+	if csrfToken == "" {
+		return false
+	}
+	return csrfToken == r.Session.GetCsrfToken()
+}
+
+func (r *Request) GetFormValue(key string) string {
+	for k, v := range r.HttpRequest.Form {
+		if k == key {
+			return v[0]
+		}
+	}
+	return ""
+}
+
 func (r *Request) ResetOrCreateSession() {
 	r.Session = Session{
-		CookieId: CreateSessionId(),
+		CookieId: CreateToken(),
 	}
 	cookie := http.Cookie{
 		Name: COOKIE_NAME,
