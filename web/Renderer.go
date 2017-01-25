@@ -54,7 +54,6 @@ func GetRenderer(directory string) (*Renderer, error) {
 		templateText += "{{ define \"" + templateName + "\" }}" + string(contents) + "{{ end }}\n"
 	}
 
-	println(templateText)
 	return &Renderer{
 		templateText: templateText,
 	}, nil
