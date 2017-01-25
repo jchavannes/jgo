@@ -50,10 +50,11 @@ func GetRenderer(directory string) (*Renderer, error) {
 		contents, err := ioutil.ReadFile(file)
 		check(err)
 
-		filename := file[len(directory) + 1:]
-		templateText += "{{ define \"" + filename + "\" }}" + string(contents) + "{{ end }}\n"
+		templateName := strings.TrimPrefix(strings.TrimPrefix(file, directory), "/")
+		templateText += "{{ define \"" + templateName + "\" }}" + string(contents) + "{{ end }}\n"
 	}
 
+	println(templateText)
 	return &Renderer{
 		templateText: templateText,
 	}, nil

@@ -17,10 +17,9 @@ type Server struct {
 }
 
 func (s *Server) Run() {
-	// Templates
 	s.addTemplatesRoute()
+	s.addStaticRoute()
 
-	// Routes
 	s.HttpServerMux = http.NewServeMux()
 	for _, routeTemp := range s.Routes {
 		route := routeTemp
@@ -39,13 +38,6 @@ func (s *Server) Run() {
 			route.Handler(&request)
 			fmt.Printf("Handled request: %#v\n", r.URL.Path)
 		})
-	}
-
-	// Static assets
-	if len(s.StaticDirectory) > 0 {
-		s.FileHandler = http.FileServer(http.Dir(s.StaticDirectory))
-		staticDirectory := "/" + s.StaticDirectory + "/"
-		s.HttpServerMux.Handle(staticDirectory, http.StripPrefix(staticDirectory, s.FileHandler))
 	}
 
 	err := http.ListenAndServe(":" + strconv.Itoa(s.Port), s.HttpServerMux)
@@ -72,6 +64,19 @@ func (s *Server) addTemplatesRoute() {
 					filename + ".html",
 					"404.html",
 				}, r.HttpResponseWriter, nil)
+			},
+		})
+	}
+}
+func (s *Server) addStaticRoute() {
+	if len(s.StaticDirectory) > 0 {
+		staticDirectory := "/" + s.StaticDirectory + "/"
+		s.Routes = append(s.Routes, Route{
+			Pattern: staticDirectory,
+			Handler: func(r *Request) {
+				s.FileHandler = http.FileServer(http.Dir(s.StaticDirectory))
+				handler := http.StripPrefix(staticDirectory, s.FileHandler)
+				handler.ServeHTTP(r.HttpResponseWriter, &r.HttpRequest)
 			},
 		})
 	}
