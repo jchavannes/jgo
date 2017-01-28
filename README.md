@@ -18,9 +18,6 @@ import (
 func main() {
     server := web.Server{
         Port: 80,
-        EnableSessions: true,
-        TemplateDirectory: "templates",
-        StaticDirectory: "public",
         Routes: []web.Route{{
             Pattern: "/hello",
             Handler: func(r *web.Request) {

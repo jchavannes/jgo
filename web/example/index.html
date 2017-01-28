@@ -2,4 +2,9 @@
 
 JGo web example
 
+    <form action="post" method="post">
+    <input type="hidden" name="csrf-token" value="{{ .Session.GetCsrfToken }}" />
+    <input type="submit" value="Post" />
+</form>
+
 {{ template "footer.html" . }}

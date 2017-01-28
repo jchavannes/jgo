@@ -68,6 +68,7 @@ func (s *Server) addTemplatesRoute() {
 		})
 	}
 }
+
 func (s *Server) addStaticRoute() {
 	if len(s.StaticDirectory) > 0 {
 		staticDirectory := "/" + s.StaticDirectory + "/"

@@ -26,12 +26,8 @@ func (r *Request) IsCsrfPresentAndValid() bool {
 }
 
 func (r *Request) GetFormValue(key string) string {
-	for k, v := range r.HttpRequest.Form {
-		if k == key {
-			return v[0]
-		}
-	}
-	return ""
+	r.HttpRequest.ParseForm()
+	return r.HttpRequest.Form.Get(key)
 }
 
 func (r *Request) ResetOrCreateSession() {
