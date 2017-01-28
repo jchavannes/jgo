@@ -7,49 +7,28 @@ import (
 )
 
 type Server struct {
-	Port              int
-	TemplateDirectory string
-	StaticDirectory   string
-	Routes            []Route
-	EnableSessions    bool
-	HttpServerMux     *http.ServeMux
-	FileHandler       http.Handler
+	Port          int
+	Template      Template
+	Static        Static
+	Routes        []Route
+	Sessions      bool
+	HttpServerMux *http.ServeMux
+	FileHandler   http.Handler
 }
 
 func (s *Server) Run() {
 	s.addTemplatesRoute()
 	s.addStaticRoute()
-
-	s.HttpServerMux = http.NewServeMux()
-	for _, routeTemp := range s.Routes {
-		route := routeTemp
-		fmt.Printf("Setting pattern: %s\n", route.Pattern)
-		s.HttpServerMux.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
-			request := Request{
-				HttpResponseWriter: w,
-				HttpRequest: *r,
-			}
-			if s.EnableSessions {
-				request.InitSession()
-			}
-			if route.CsrfProtect && ! request.IsCsrfPresentAndValid() {
-				return
-			}
-			route.Handler(&request)
-			fmt.Printf("Handled request: %#v\n", r.URL.Path)
-		})
-	}
-
-	err := http.ListenAndServe(":" + strconv.Itoa(s.Port), s.HttpServerMux)
-	check(err)
+	s.setupHandlers()
+	s.startServer()
 }
 
 func (s *Server) addTemplatesRoute() {
-	if len(s.TemplateDirectory) > 0 {
+	if len(s.Template.Directory) > 0 {
 		s.Routes = append(s.Routes, Route{
-			Pattern: "/",
+			Pattern: s.Template.Pattern,
 			Handler: func(r *Request) {
-				renderer, err := GetRenderer(s.TemplateDirectory)
+				renderer, err := GetRenderer(s.Template.Directory)
 				check(err)
 
 				r.HttpResponseWriter.Header().Set("Content-Type", "text/html")
@@ -70,15 +49,42 @@ func (s *Server) addTemplatesRoute() {
 }
 
 func (s *Server) addStaticRoute() {
-	if len(s.StaticDirectory) > 0 {
-		staticDirectory := "/" + s.StaticDirectory + "/"
+	if len(s.Static.Directory) > 0 {
 		s.Routes = append(s.Routes, Route{
-			Pattern: staticDirectory,
+			Pattern: s.Static.Pattern,
 			Handler: func(r *Request) {
-				s.FileHandler = http.FileServer(http.Dir(s.StaticDirectory))
-				handler := http.StripPrefix(staticDirectory, s.FileHandler)
+				s.FileHandler = http.FileServer(http.Dir(s.Static.Directory))
+				handler := http.StripPrefix("/" + s.Static.Directory + "/", s.FileHandler)
 				handler.ServeHTTP(r.HttpResponseWriter, &r.HttpRequest)
 			},
 		})
 	}
+}
+
+func (s *Server) setupHandlers() {
+	s.HttpServerMux = http.NewServeMux()
+	for _, routeTemp := range s.Routes {
+		route := routeTemp
+		fmt.Printf("Setting pattern: %s\n", route.Pattern)
+		s.HttpServerMux.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
+			request := Request{
+				HttpResponseWriter: w,
+				HttpRequest: *r,
+			}
+			if s.Sessions {
+				request.InitSession()
+			}
+			if route.CsrfProtect && ! request.IsCsrfPresentAndValid() {
+				request.SetResponseCode(http.StatusForbidden)
+			} else {
+				route.Handler(&request)
+			}
+			fmt.Printf("Handled request: %#v\n", r.URL.Path)
+		})
+	}
+}
+
+func (s *Server) startServer() {
+	err := http.ListenAndServe(":" + strconv.Itoa(s.Port), s.HttpServerMux)
+	check(err)
 }

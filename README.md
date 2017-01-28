@@ -1,9 +1,9 @@
 ## JGo Web
 
 - **Port**: Port to bind to
-- **EnableSessions**: Set JGoSession cookie
-- **TemplateDirectory**: Go HTML templates
-- **StaticDirectory**: Static assets
+- **Sessions**: Set JGoSession cookie
+- **Template**: Go HTML templates
+- **Static**: Static assets
 - **Routes**: Custom endpoints
 
 #### Example usage

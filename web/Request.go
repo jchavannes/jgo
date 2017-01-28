@@ -55,6 +55,10 @@ func (r *Request) InitSession() {
 	}
 }
 
+func (r *Request) SetResponseCode(code int) {
+	r.HttpResponseWriter.WriteHeader(code)
+}
+
 func (r *Request) Write(s string) {
 	r.HttpResponseWriter.Write([]byte(s))
 }

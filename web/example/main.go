@@ -7,7 +7,14 @@ import (
 func main() {
 	server := web.Server{
 		Port: 8080,
-		TemplateDirectory: "./",
+		Template: web.Template{
+			Pattern: "/",
+			Directory: "./",
+		},
+		Static: web.Static{
+			Pattern: "/pub",
+			Directory: "pub",
+		},
 		Routes: []web.Route{{
 			Pattern: "/post",
 			CsrfProtect: true,
