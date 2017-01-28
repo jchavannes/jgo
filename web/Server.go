@@ -8,8 +8,8 @@ import (
 
 type Server struct {
 	Port          int
-	Template      Template
-	Static        Static
+	TemplateDir   string
+	StaticDir     string
 	Routes        []Route
 	Sessions      bool
 	HttpServerMux *http.ServeMux
@@ -24,11 +24,11 @@ func (s *Server) Run() {
 }
 
 func (s *Server) addTemplatesRoute() {
-	if len(s.Template.Directory) > 0 {
+	if len(s.TemplateDir) > 0 {
 		s.Routes = append(s.Routes, Route{
-			Pattern: s.Template.Pattern,
+			Pattern: "/",
 			Handler: func(r *Request) {
-				renderer, err := GetRenderer(s.Template.Directory)
+				renderer, err := GetRenderer(s.TemplateDir)
 				check(err)
 
 				r.HttpResponseWriter.Header().Set("Content-Type", "text/html")
@@ -49,12 +49,13 @@ func (s *Server) addTemplatesRoute() {
 }
 
 func (s *Server) addStaticRoute() {
-	if len(s.Static.Directory) > 0 {
+	if len(s.StaticDir) > 0 {
+		staticDirectory := s.StaticDir + "/"
 		s.Routes = append(s.Routes, Route{
-			Pattern: s.Static.Pattern,
+			Pattern: staticDirectory,
 			Handler: func(r *Request) {
-				s.FileHandler = http.FileServer(http.Dir(s.Static.Directory))
-				handler := http.StripPrefix("/" + s.Static.Directory + "/", s.FileHandler)
+				s.FileHandler = http.FileServer(http.Dir(s.StaticDir))
+				handler := http.StripPrefix(staticDirectory, s.FileHandler)
 				handler.ServeHTTP(r.HttpResponseWriter, &r.HttpRequest)
 			},
 		})
