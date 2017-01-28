@@ -28,3 +28,11 @@ func main() {
     server.Run()
 }
 ```
+
+---
+
+#### Todo
+
+- Web sockets
+- Persistent sessions
+- Both templates and static assets in root
