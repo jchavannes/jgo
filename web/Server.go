@@ -1,24 +1,23 @@
 package web
 
 import (
+	"github.com/gorilla/mux"
 	"net/http"
 	"fmt"
 	"strconv"
 )
 
 type Server struct {
-	Port          int
-	TemplateDir   string
-	StaticDir     string
-	Routes        []Route
-	Sessions      bool
-	HttpServerMux *http.ServeMux
-	FileHandler   http.Handler
+	Port        int
+	TemplateDir string
+	StaticDir   string
+	Routes      []Route
+	Sessions    bool
+	Router      *mux.Router
 }
 
 func (s *Server) Run() {
 	s.addTemplatesRoute()
-	s.addStaticRoute()
 	s.setupHandlers()
 	s.startServer()
 }
@@ -48,26 +47,12 @@ func (s *Server) addTemplatesRoute() {
 	}
 }
 
-func (s *Server) addStaticRoute() {
-	if len(s.StaticDir) > 0 {
-		staticDirectory := s.StaticDir + "/"
-		s.Routes = append(s.Routes, Route{
-			Pattern: staticDirectory,
-			Handler: func(r *Request) {
-				s.FileHandler = http.FileServer(http.Dir(s.StaticDir))
-				handler := http.StripPrefix(staticDirectory, s.FileHandler)
-				handler.ServeHTTP(r.HttpResponseWriter, &r.HttpRequest)
-			},
-		})
-	}
-}
-
 func (s *Server) setupHandlers() {
-	s.HttpServerMux = http.NewServeMux()
+	s.Router = mux.NewRouter()
 	for _, routeTemp := range s.Routes {
 		route := routeTemp
 		fmt.Printf("Setting pattern: %s\n", route.Pattern)
-		s.HttpServerMux.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
+		s.Router.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
 			request := Request{
 				HttpResponseWriter: w,
 				HttpRequest: *r,
@@ -83,9 +68,17 @@ func (s *Server) setupHandlers() {
 			fmt.Printf("Handled request: %#v\n", r.URL.Path)
 		})
 	}
+	if len(s.StaticDir) > 0 {
+		fmt.Printf("Setting static file handler: %s\n", s.StaticDir)
+		s.Router.PathPrefix("/").Handler(http.FileServer(http.Dir(s.StaticDir)))
+	}
 }
 
 func (s *Server) startServer() {
-	err := http.ListenAndServe(":" + strconv.Itoa(s.Port), s.HttpServerMux)
+	srv := &http.Server{
+		Handler: s.Router,
+		Addr: ":" + strconv.Itoa(s.Port),
+	}
+	err := srv.ListenAndServe()
 	check(err)
 }

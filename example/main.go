@@ -9,7 +9,7 @@ func main() {
 		Port: 8080,
 		Sessions: true,
 		TemplateDir: "./",
-		StaticDir: "/pub",
+		StaticDir: "pub",
 		Routes: []web.Route{{
 			Pattern: "/post",
 			CsrfProtect: true,
