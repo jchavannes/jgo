@@ -27,21 +27,13 @@ func (s *Server) addTemplatesRoute() {
 		s.Routes = append(s.Routes, Route{
 			Pattern: "/",
 			Handler: func(r *Request) {
-				renderer, err := GetRenderer(s.TemplateDir)
-				check(err)
+				templateName := GetFilenameFromRequest(r.HttpRequest)
 
-				r.HttpResponseWriter.Header().Set("Content-Type", "text/html")
-
-				filename := GetFilenameFromRequest(r.HttpRequest)
-
-				if len(filename) == 0 {
-					filename = "index"
+				if len(templateName) == 0 {
+					templateName = "index"
 				}
 
-				renderer.Render([]string{
-					filename + ".html",
-					"404.html",
-				}, r.HttpResponseWriter, r)
+				r.Render(templateName)
 			},
 		})
 	}
@@ -56,6 +48,7 @@ func (s *Server) setupHandlers() {
 			request := Request{
 				HttpResponseWriter: w,
 				HttpRequest: *r,
+				TemplateDir: s.TemplateDir,
 			}
 			if s.Sessions {
 				request.InitSession()

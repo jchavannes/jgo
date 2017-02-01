@@ -11,6 +11,7 @@ const COOKIE_NAME = "JGoSession"
 type Request struct {
 	HttpResponseWriter http.ResponseWriter
 	HttpRequest        http.Request
+	TemplateDir        string
 	Session            Session
 }
 
@@ -61,4 +62,16 @@ func (r *Request) SetResponseCode(code int) {
 
 func (r *Request) Write(s string) {
 	r.HttpResponseWriter.Write([]byte(s))
+}
+
+func (r *Request) Render(templateName string) {
+	renderer, err := GetRenderer(r.TemplateDir)
+	check(err)
+
+	r.HttpResponseWriter.Header().Set("Content-Type", "text/html")
+
+	renderer.Render([]string{
+		templateName + ".html",
+		"404.html",
+	}, r.HttpResponseWriter, r)
 }

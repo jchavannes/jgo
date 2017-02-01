@@ -1,0 +1,31 @@
+{{ template "header.html" . }}
+
+<div class="jumbotron">
+    <div class="container signup">
+
+        <br/><br/><br/>
+        <h1>Sign Up</h1>
+
+        <form id="form-signup" method="post">
+            <input type="hidden" name="csrf-token" value="{{ .Session.GetCsrfToken }}"/>
+            <p>
+                <label for="username">Username</label>
+                <input id="username" type="text" name="username" class="form-control" placeholder="Username" required autofocus>
+            </p>
+            <p>
+                <label for="password">Password</label>
+                <input id="password" type="password" name="password" class="form-control" placeholder="Password" required>
+            </p>
+            <p><button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button></p>
+        </form>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        JGo.Form.Signup($("#form-signup"));
+    });
+</script>
+
+{{ template "footer.html" . }}
