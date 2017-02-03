@@ -1,4 +1,4 @@
-JGo = {};
+JGoExampleApp = {};
 
 $(function() {
 
@@ -25,9 +25,9 @@ $(function() {
         });
     }
 
-    JGo.InitCsrf = InitCsrf;
+    JGoExampleApp.InitCsrf = InitCsrf;
 
-    JGo.Form = {
+    JGoExampleApp.Form = {
         /**
          * @param {jQuery} $ele
          */
@@ -49,13 +49,13 @@ $(function() {
 
                 $.ajax({
                     type: "POST",
-                    url: JGo.URL.SignupSubmit,
+                    url: JGoExampleApp.URL.SignupSubmit,
                     data: {
                         username: username,
                         password: password
                     },
                     success: function () {
-                        window.location = JGo.URL.Lobby
+                        window.location = JGoExampleApp.URL.Lobby
                     },
                     /**
                      * @param {XMLHttpRequest} xhr
@@ -68,7 +68,7 @@ $(function() {
         }
     };
 
-    JGo.URL = {
+    JGoExampleApp.URL = {
         Lobby: "/lobby",
         SignupSubmit: "/signup-submit"
     };
