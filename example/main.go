@@ -6,7 +6,7 @@ import (
 
 func main() {
 	server := web.Server{
-		Port: 8080,
+		Port: 8248,
 		Sessions: true,
 		TemplateDir: "templates",
 		StaticDir: "pub",

@@ -31,6 +31,14 @@ func (r *Request) GetFormValue(key string) string {
 	return r.HttpRequest.Form.Get(key)
 }
 
+func (r *Request) GetAppPath() string {
+	apppath := r.HttpRequest.Header.Get("Apppath")
+	if len(apppath) == 0 {
+		apppath = "/"
+	}
+	return apppath
+}
+
 func (r *Request) ResetOrCreateSession() {
 	r.Session = Session{
 		CookieId: CreateToken(),
