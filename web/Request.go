@@ -19,7 +19,7 @@ func (r *Request) IsCsrfPresentAndValid() bool {
 	if r.HttpRequest.Method != "POST" {
 		return false
 	}
-	csrfToken := r.GetFormValue("csrf-token")
+	csrfToken := r.HttpRequest.Header.Get("X-CSRF-Token")
 	if csrfToken == "" {
 		return false
 	}
@@ -31,9 +31,13 @@ func (r *Request) GetFormValue(key string) string {
 	return r.HttpRequest.Form.Get(key)
 }
 
-func (r *Request) GetAppPath() string {
-	apppath := r.HttpRequest.Header.Get("Apppath")
-	if len(apppath) == 0 {
+func (r *Request) GetHeader(key string) string {
+	return r.HttpRequest.Header.Get(key)
+}
+
+func (r *Request) GetBaseUrl() string {
+	apppath := r.GetHeader("Apppath")
+	if apppath == "" {
 		apppath = "/"
 	}
 	return apppath

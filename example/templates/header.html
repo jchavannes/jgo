@@ -12,6 +12,7 @@
     <script type="text/javascript">
         $(function() {
             JGoExampleApp.InitCsrf("{{ .Session.GetCsrfToken }}");
+            JGoExampleApp.SetBaseUrl("{{ .GetBaseUrl }}");
         });
     </script>
 </head>
@@ -23,7 +24,7 @@
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                 <span class="sr-only">Toggle navigation</span>
             </button>
-            <a class="navbar-brand" href="{{ .GetAppPath }}"><h1>JGo Web Example</h1></a>
+            <a class="navbar-brand" href="{{ .GetBaseUrl }}"><h1>JGo Web Example</h1></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <div class="navbar-form navbar-right">

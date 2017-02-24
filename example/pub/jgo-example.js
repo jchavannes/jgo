@@ -27,6 +27,17 @@ $(function() {
 
     JGoExampleApp.InitCsrf = InitCsrf;
 
+    var BaseURL = "/";
+
+    /**
+     * @param url {string}
+     */
+    function SetBaseUrl(url) {
+        BaseURL = url;
+    }
+
+    JGoExampleApp.SetBaseUrl = SetBaseUrl;
+
     JGoExampleApp.Form = {
         /**
          * @param {jQuery} $ele
@@ -49,19 +60,19 @@ $(function() {
 
                 $.ajax({
                     type: "POST",
-                    url: JGoExampleApp.URL.SignupSubmit,
+                    url: BaseURL + JGoExampleApp.URL.SignupSubmit,
                     data: {
                         username: username,
                         password: password
                     },
                     success: function () {
-                        window.location = JGoExampleApp.URL.Lobby
+                        window.location = BaseURL + JGoExampleApp.URL.Lobby
                     },
                     /**
                      * @param {XMLHttpRequest} xhr
                      */
                     error: function (xhr) {
-                        alert("Error creating account:\n" + xhr.responseText);
+                        alert("Error creating account:\n" + xhr.responseText + "\nIf this problem persists, try refreshing the page.");
                     }
                 });
             });
@@ -69,8 +80,8 @@ $(function() {
     };
 
     JGoExampleApp.URL = {
-        Lobby: "/lobby",
-        SignupSubmit: "/signup-submit"
+        Lobby: "lobby",
+        SignupSubmit: "signup-submit"
     };
 
 });
