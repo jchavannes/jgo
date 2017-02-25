@@ -13,13 +13,14 @@ type Request struct {
 	HttpRequest        http.Request
 	TemplateDir        string
 	Session            Session
+	Custom             interface{}
 }
 
 func (r *Request) IsCsrfPresentAndValid() bool {
 	if r.HttpRequest.Method != "POST" {
 		return false
 	}
-	csrfToken := r.GetFormValue("csrf-token")
+	csrfToken := r.HttpRequest.Header.Get("X-CSRF-Token")
 	if csrfToken == "" {
 		return false
 	}
@@ -31,9 +32,13 @@ func (r *Request) GetFormValue(key string) string {
 	return r.HttpRequest.Form.Get(key)
 }
 
-func (r *Request) GetAppPath() string {
-	apppath := r.HttpRequest.Header.Get("Apppath")
-	if len(apppath) == 0 {
+func (r *Request) GetHeader(key string) string {
+	return r.HttpRequest.Header.Get(key)
+}
+
+func (r *Request) GetBaseUrl() string {
+	apppath := r.GetHeader("Apppath")
+	if apppath == "" {
 		apppath = "/"
 	}
 	return apppath
@@ -72,7 +77,16 @@ func (r *Request) Write(s string) {
 	r.HttpResponseWriter.Write([]byte(s))
 }
 
-func (r *Request) Render(templateName string) {
+func (r *Request) Render() {
+	requestURI := r.HttpRequest.RequestURI
+	templateName := requestURI[1:]
+	if templateName == "" {
+		templateName = "index"
+	}
+	r.RenderTemplate(templateName)
+}
+
+func (r *Request) RenderTemplate(templateName string) {
 	renderer, err := GetRenderer(r.TemplateDir)
 	check(err)
 
@@ -82,4 +96,8 @@ func (r *Request) Render(templateName string) {
 		templateName + ".html",
 		"404.html",
 	}, r.HttpResponseWriter, r)
+}
+
+func (r *Request) SetRedirect(location string) {
+	r.HttpResponseWriter.Header().Set("Location", location)
 }
