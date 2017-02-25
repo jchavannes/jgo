@@ -8,12 +8,12 @@ import (
 )
 
 type Server struct {
-	Port        int
-	TemplateDir string
-	StaticDir   string
-	Routes      []Route
-	Sessions    bool
-	Router      *mux.Router
+	Port           int
+	TemplateDir    string
+	StaticDir      string
+	Routes         []Route
+	Sessions       bool
+	Router         *mux.Router
 }
 
 func (s *Server) Run() {
@@ -33,7 +33,7 @@ func (s *Server) addTemplatesRoute() {
 					templateName = "index"
 				}
 
-				r.Render(templateName)
+				r.RenderTemplate(templateName)
 			},
 		})
 	}

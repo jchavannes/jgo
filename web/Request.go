@@ -13,6 +13,7 @@ type Request struct {
 	HttpRequest        http.Request
 	TemplateDir        string
 	Session            Session
+	Custom             interface{}
 }
 
 func (r *Request) IsCsrfPresentAndValid() bool {
@@ -76,7 +77,16 @@ func (r *Request) Write(s string) {
 	r.HttpResponseWriter.Write([]byte(s))
 }
 
-func (r *Request) Render(templateName string) {
+func (r *Request) Render() {
+	requestURI := r.HttpRequest.RequestURI
+	templateName := requestURI[1:]
+	if templateName == "" {
+		templateName = "index"
+	}
+	r.RenderTemplate(templateName)
+}
+
+func (r *Request) RenderTemplate(templateName string) {
 	renderer, err := GetRenderer(r.TemplateDir)
 	check(err)
 
@@ -86,4 +96,8 @@ func (r *Request) Render(templateName string) {
 		templateName + ".html",
 		"404.html",
 	}, r.HttpResponseWriter, r)
+}
+
+func (r *Request) SetRedirect(location string) {
+	r.HttpResponseWriter.Header().Set("Location", location)
 }
