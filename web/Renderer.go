@@ -8,6 +8,7 @@ import (
 	"strings"
 	"io/ioutil"
 	"os"
+	"fmt"
 )
 
 type Renderer struct {
@@ -39,7 +40,9 @@ func GetRenderer(directory string) (*Renderer, error) {
 		fileList = append(fileList, path)
 		return nil
 	})
-	check(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	templateText := ""
 	for _, file := range fileList {
@@ -48,7 +51,9 @@ func GetRenderer(directory string) (*Renderer, error) {
 		}
 
 		contents, err := ioutil.ReadFile(file)
-		check(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 
 		templateName := strings.TrimPrefix(strings.TrimPrefix(file, directory), "/")
 		templateText += "{{ define \"" + templateName + "\" }}" + string(contents) + "{{ end }}\n"

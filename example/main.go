@@ -11,14 +11,14 @@ import (
 var (
 	defaultRoute = web.Route{
 		Pattern: "/",
-		Handler: func(r *web.Request) {
+		Handler: func(r *web.Response) {
 			r.Render()
 		},
 	}
 
 	signupRoute = web.Route{
 		Pattern: "/signup",
-		Handler: func(r *web.Request) {
+		Handler: func(r *web.Response) {
 			r.Render()
 		},
 	}
@@ -26,9 +26,10 @@ var (
 	signupSubmitRoute = web.Route{
 		Pattern: "/signup-submit",
 		CsrfProtect: true,
-		Handler: func(r *web.Request) {
-			username := r.GetFormValue("username")
-			password := r.GetFormValue("password")
+		Handler: func(r *web.Response) {
+			request := r.Request
+			username := request.GetFormValue("username")
+			password := request.GetFormValue("password")
 			user, err := auth.Signup(username, password)
 			if err != nil {
 				fmt.Printf("Error signing up: %s\n", err)
@@ -52,7 +53,7 @@ var (
 
 	loginRoute = web.Route{
 		Pattern: "/login",
-		Handler: func(r *web.Request) {
+		Handler: func(r *web.Response) {
 			r.Render()
 		},
 	}
@@ -60,9 +61,10 @@ var (
 	loginSubmitRoute = web.Route{
 		Pattern: "/login-submit",
 		CsrfProtect: true,
-		Handler: func(r *web.Request) {
-			username := r.GetFormValue("username")
-			password := r.GetFormValue("password")
+		Handler: func(r *web.Response) {
+			request := r.Request
+			username := request.GetFormValue("username")
+			password := request.GetFormValue("password")
 			user, err := auth.Login(username, password)
 			if err != nil {
 				fmt.Printf("Error logging in: %s\n", err)
@@ -86,7 +88,7 @@ var (
 
 	lobbyRoute = web.Route{
 		Pattern: "/lobby",
-		Handler: func(r *web.Request) {
+		Handler: func(r *web.Response) {
 			session, err := db.GetSession(r.Session.CookieId)
 			if err != nil {
 				fmt.Printf("Error getting session: %s\n", err)
@@ -108,8 +110,8 @@ var (
 		},
 	}
 
-	initRequest = func(r *web.Request) {
-		baseUrl := r.GetHeader("AppPath")
+	initRequest = func(r *web.Response) {
+		baseUrl := r.Request.GetHeader("AppPath")
 		if baseUrl == "" {
 			baseUrl = "/"
 		}
@@ -123,7 +125,7 @@ func main() {
 		Sessions: true,
 		TemplateDir: "templates",
 		StaticDir: "pub",
-		InitRequest: initRequest,
+		InitResponse: initRequest,
 		Routes: []web.Route{
 			defaultRoute,
 			signupRoute,

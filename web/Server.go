@@ -8,14 +8,14 @@ import (
 )
 
 type Server struct {
-	Port        int
-	TemplateDir string
-	StaticDir   string
-	InitRequest func(*Request)
-	Routes      []Route
-	SessionKey  string
-	Sessions    bool
-	Router      *mux.Router
+	InitResponse func(*Response)
+	Port         int
+	Router       *mux.Router
+	Routes       []Route
+	SessionKey   string
+	Sessions     bool
+	StaticDir    string
+	TemplateDir  string
 }
 
 func (s *Server) Run() {
@@ -28,8 +28,8 @@ func (s *Server) addTemplatesRoute() {
 	if len(s.TemplateDir) > 0 {
 		s.Routes = append(s.Routes, Route{
 			Pattern: "/",
-			Handler: func(r *Request) {
-				templateName := GetFilenameFromRequest(r.HttpRequest)
+			Handler: func(r *Response) {
+				templateName := r.Request.GetPotentialFilename()
 
 				if len(templateName) == 0 {
 					templateName = "index"
@@ -47,22 +47,23 @@ func (s *Server) setupHandlers() {
 		route := routeTemp
 		fmt.Printf("Setting pattern: %s\n", route.Pattern)
 		s.Router.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
-			request := Request{
+			response := Response{
 				Helper: make(map[string]string),
-				HttpResponseWriter: w,
-				HttpRequest: *r,
-				SessionKey: s.SessionKey,
+				Writer: w,
+				Request: Request{
+					HttpRequest: *r,
+				},
 				TemplateDir: s.TemplateDir,
 			}
 			if s.Sessions {
-				request.InitSession()
+				response.InitSession(s.SessionKey)
 			}
-			s.InitRequest(&request)
-			request.Helper["CsrfToken"] = request.Session.GetCsrfToken()
-			if route.CsrfProtect && ! request.IsCsrfPresentAndValid() {
-				request.SetResponseCode(http.StatusForbidden)
+			s.InitResponse(&response)
+			response.Helper["CsrfToken"] = response.Session.GetCsrfToken()
+			if route.CsrfProtect && ! response.IsValidCsrf() {
+				response.SetResponseCode(http.StatusForbidden)
 			} else {
-				route.Handler(&request)
+				route.Handler(&response)
 			}
 			fmt.Printf("Handled request: %#v\n", r.URL.Path)
 		})
@@ -79,5 +80,7 @@ func (s *Server) startServer() {
 		Addr: ":" + strconv.Itoa(s.Port),
 	}
 	err := srv.ListenAndServe()
-	check(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
