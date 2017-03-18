@@ -35,5 +35,3 @@ func main() {
 
 - Web sockets
 - Authentication example
-- Persistent sessions
-- Both templates and static assets in root
