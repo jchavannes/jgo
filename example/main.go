@@ -107,6 +107,14 @@ var (
 			r.Render()
 		},
 	}
+
+	initRequest = func(r *web.Request) {
+		baseUrl := r.GetHeader("AppPath")
+		if baseUrl == "" {
+			baseUrl = "/"
+		}
+		r.Helper["BaseUrl"] = baseUrl
+	}
 )
 
 func main() {
@@ -115,13 +123,7 @@ func main() {
 		Sessions: true,
 		TemplateDir: "templates",
 		StaticDir: "pub",
-		InitRequest: func(r *web.Request) {
-			baseUrl := r.GetHeader("AppPath")
-			if baseUrl == "" {
-				baseUrl = "/"
-			}
-			r.Helper["BaseUrl"] = baseUrl
-		},
+		InitRequest: initRequest,
 		Routes: []web.Route{
 			defaultRoute,
 			signupRoute,
