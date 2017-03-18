@@ -7,31 +7,22 @@ import (
 	"net/http"
 )
 
-func main() {
-	server := web.Server{
-		Port: 8248,
-		Sessions: true,
-		TemplateDir: "templates",
-		StaticDir: "pub",
-		Routes: []web.Route{},
-	}
-
-	server.Routes = append(server.Routes, web.Route{
+var (
+	defaultRoute = web.Route{
 		Pattern: "/",
 		Handler: func(r *web.Request) {
-
 			r.Render()
 		},
-	})
+	}
 
-	server.Routes = append(server.Routes, web.Route{
+	signupRoute = web.Route{
 		Pattern: "/signup",
 		Handler: func(r *web.Request) {
 			r.Render()
 		},
-	})
+	}
 
-	server.Routes = append(server.Routes, web.Route{
+	signupSubmitRoute = web.Route{
 		Pattern: "/signup-submit",
 		CsrfProtect: true,
 		Handler: func(r *web.Request) {
@@ -56,16 +47,16 @@ func main() {
 				return
 			}
 		},
-	})
+	}
 
-	server.Routes = append(server.Routes, web.Route{
+	loginRoute = web.Route{
 		Pattern: "/login",
 		Handler: func(r *web.Request) {
 			r.Render()
 		},
-	})
+	}
 
-	server.Routes = append(server.Routes, web.Route{
+	loginSubmitRoute = web.Route{
 		Pattern: "/login-submit",
 		CsrfProtect: true,
 		Handler: func(r *web.Request) {
@@ -90,9 +81,9 @@ func main() {
 				return
 			}
 		},
-	})
+	}
 
-	server.Routes = append(server.Routes, web.Route{
+	lobbyRoute = web.Route{
 		Pattern: "/lobby",
 		Handler: func(r *web.Request) {
 			session, err := db.GetSession(r.Session.CookieId)
@@ -111,14 +102,31 @@ func main() {
 				r.SetRedirect("/")
 				return
 			}
-			r.Custom = struct{
+			r.Custom = struct {
 				Username string
 			}{
 				Username: user.Username,
 			}
 			r.Render()
 		},
-	})
+	}
+)
+
+func main() {
+	server := web.Server{
+		Port: 8248,
+		Sessions: true,
+		TemplateDir: "templates",
+		StaticDir: "pub",
+		Routes: []web.Route{
+			defaultRoute,
+			signupRoute,
+			signupSubmitRoute,
+			loginRoute,
+			loginSubmitRoute,
+			lobbyRoute,
+		},
+	}
 
 	server.Run()
 }
