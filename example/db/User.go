@@ -21,3 +21,19 @@ func GetUser(user User) (User, error) {
 	result := db.Find(&user, &user)
 	return user, result.Error
 }
+
+func CreateUser(username string, hashedPassword string) (User, error) {
+	user := User{
+		Username: username,
+		PasswordHash: string(hashedPassword),
+	}
+	db, err := getDb()
+	if err != nil {
+		return user, err
+	}
+	result := db.Create(&user)
+	if result.Error != nil {
+		return user, result.Error
+	}
+	return user, nil
+}

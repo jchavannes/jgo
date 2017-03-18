@@ -1,8 +1,8 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
-	"log"
 )
 
 func GetFilenameFromRequest(r http.Request) string {
@@ -11,6 +11,6 @@ func GetFilenameFromRequest(r http.Request) string {
 
 func check(e error) {
 	if e != nil {
-		log.Fatal(e)
+		fmt.Println(e)
 	}
 }

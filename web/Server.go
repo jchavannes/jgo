@@ -11,6 +11,7 @@ type Server struct {
 	Port        int
 	TemplateDir string
 	StaticDir   string
+	InitRequest func(*Request)
 	Routes      []Route
 	SessionKey  string
 	Sessions    bool
@@ -47,6 +48,7 @@ func (s *Server) setupHandlers() {
 		fmt.Printf("Setting pattern: %s\n", route.Pattern)
 		s.Router.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
 			request := Request{
+				Helper: make(map[string]string),
 				HttpResponseWriter: w,
 				HttpRequest: *r,
 				SessionKey: s.SessionKey,
@@ -55,6 +57,8 @@ func (s *Server) setupHandlers() {
 			if s.Sessions {
 				request.InitSession()
 			}
+			s.InitRequest(&request)
+			request.Helper["CsrfToken"] = request.Session.GetCsrfToken()
 			if route.CsrfProtect && ! request.IsCsrfPresentAndValid() {
 				request.SetResponseCode(http.StatusForbidden)
 			} else {

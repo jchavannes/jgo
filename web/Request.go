@@ -15,7 +15,7 @@ type Request struct {
 	TemplateDir        string
 	Session            Session
 	SessionKey         string
-	Custom             interface{}
+	Helper             map[string]string
 }
 
 func (r *Request) IsCsrfPresentAndValid() bool {
@@ -36,14 +36,6 @@ func (r *Request) GetFormValue(key string) string {
 
 func (r *Request) GetHeader(key string) string {
 	return r.HttpRequest.Header.Get(key)
-}
-
-func (r *Request) GetBaseUrl() string {
-	apppath := r.GetHeader("Apppath")
-	if apppath == "" {
-		apppath = "/"
-	}
-	return apppath
 }
 
 func (r *Request) getSessionKey() string {
@@ -70,8 +62,11 @@ func (r *Request) ResetOrCreateSession() {
 
 func (r *Request) InitSession() {
 	cookie, _ := r.HttpRequest.Cookie(COOKIE_NAME)
-	valid := token.Validate(cookie.Value, r.getSessionKey())
-	if valid {
+	var validSession bool
+	if cookie != nil {
+		validSession = token.Validate(cookie.Value, r.getSessionKey())
+	}
+	if validSession {
 		r.Session = Session{
 			CookieId: cookie.Value,
 		}
@@ -103,10 +98,11 @@ func (r *Request) RenderTemplate(templateName string) {
 
 	r.HttpResponseWriter.Header().Set("Content-Type", "text/html")
 
-	renderer.Render([]string{
+	err = renderer.Render([]string{
 		templateName + ".html",
 		"404.html",
-	}, r.HttpResponseWriter, r)
+	}, r.HttpResponseWriter, r.Helper)
+	check(err)
 }
 
 func (r *Request) SetRedirect(location string) {

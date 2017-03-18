@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/jchavannes/jgo/example/auth"
 	"github.com/jchavannes/jgo/example/db"
 	"github.com/jchavannes/jgo/web"
 	"net/http"
@@ -28,7 +29,7 @@ var (
 		Handler: func(r *web.Request) {
 			username := r.GetFormValue("username")
 			password := r.GetFormValue("password")
-			user, err := db.Signup(username, password)
+			user, err := auth.Signup(username, password)
 			if err != nil {
 				fmt.Printf("Error signing up: %s\n", err)
 				r.SetResponseCode(http.StatusConflict)
@@ -62,7 +63,7 @@ var (
 		Handler: func(r *web.Request) {
 			username := r.GetFormValue("username")
 			password := r.GetFormValue("password")
-			user, err := db.Login(username, password)
+			user, err := auth.Login(username, password)
 			if err != nil {
 				fmt.Printf("Error logging in: %s\n", err)
 				r.SetResponseCode(http.StatusUnauthorized)
@@ -102,11 +103,7 @@ var (
 				r.SetRedirect("/")
 				return
 			}
-			r.Custom = struct {
-				Username string
-			}{
-				Username: user.Username,
-			}
+			r.Helper["Username"] = user.Username
 			r.Render()
 		},
 	}
@@ -118,6 +115,13 @@ func main() {
 		Sessions: true,
 		TemplateDir: "templates",
 		StaticDir: "pub",
+		InitRequest: func(r *web.Request) {
+			baseUrl := r.GetHeader("AppPath")
+			if baseUrl == "" {
+				baseUrl = "/"
+			}
+			r.Helper["BaseUrl"] = baseUrl
+		},
 		Routes: []web.Route{
 			defaultRoute,
 			signupRoute,
