@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+	"github.com/jchavannes/jgo/token"
 )
 
 const COOKIE_NAME = "JGoSession"
@@ -13,6 +14,7 @@ type Request struct {
 	HttpRequest        http.Request
 	TemplateDir        string
 	Session            Session
+	SessionKey         string
 	Custom             interface{}
 }
 
@@ -44,9 +46,17 @@ func (r *Request) GetBaseUrl() string {
 	return apppath
 }
 
+func (r *Request) getSessionKey() string {
+	sessionKey := r.SessionKey
+	if sessionKey == "" {
+		sessionKey = "not-a-secret"
+	}
+	return sessionKey
+}
+
 func (r *Request) ResetOrCreateSession() {
 	r.Session = Session{
-		CookieId: CreateToken(),
+		CookieId: token.GetSessionToken(r.getSessionKey()),
 	}
 	cookie := http.Cookie{
 		Name: COOKIE_NAME,
@@ -59,13 +69,14 @@ func (r *Request) ResetOrCreateSession() {
 }
 
 func (r *Request) InitSession() {
-	cookie, err := r.HttpRequest.Cookie(COOKIE_NAME)
-	if err != nil || cookie.Value == "" {
-		r.ResetOrCreateSession()
-	} else {
+	cookie, _ := r.HttpRequest.Cookie(COOKIE_NAME)
+	valid := token.Validate(cookie.Value, r.getSessionKey())
+	if valid {
 		r.Session = Session{
 			CookieId: cookie.Value,
 		}
+	} else {
+		r.ResetOrCreateSession()
 	}
 }
 

@@ -46,7 +46,7 @@ var _db *gorm.DB
 func getDb() (*gorm.DB, error) {
 	if _db == nil {
 		var err error
-		_db, err = gorm.Open("sqlite3", "go-example.db")
+		_db, err = gorm.Open("sqlite3", "jgo-example.db")
 		if err != nil {
 			return _db, errors.New("Failed to connect to database\n")
 		}

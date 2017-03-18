@@ -1,9 +1,9 @@
 package web
 
 import (
-	"io"
-	"encoding/base64"
 	"crypto/rand"
+	"encoding/base64"
+	"io"
 )
 
 type Session struct {

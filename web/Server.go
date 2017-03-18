@@ -8,12 +8,13 @@ import (
 )
 
 type Server struct {
-	Port           int
-	TemplateDir    string
-	StaticDir      string
-	Routes         []Route
-	Sessions       bool
-	Router         *mux.Router
+	Port        int
+	TemplateDir string
+	StaticDir   string
+	Routes      []Route
+	SessionKey  string
+	Sessions    bool
+	Router      *mux.Router
 }
 
 func (s *Server) Run() {
@@ -48,6 +49,7 @@ func (s *Server) setupHandlers() {
 			request := Request{
 				HttpResponseWriter: w,
 				HttpRequest: *r,
+				SessionKey: s.SessionKey,
 				TemplateDir: s.TemplateDir,
 			}
 			if s.Sessions {
