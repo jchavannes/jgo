@@ -1,12 +1,12 @@
 ## JGo Web
 
-- **Port**: Port to bind to
-- **Routes**: Custom endpoints
-- **Sessions**: Set JGoSession cookie
-- **SessionKey**: Key used to generate and validate session tokens
-- **StaticDir**: Static assets
-- **TemplateDir**: Go HTML templates
-- **InitResponse**: Function called before processing every response
+- **Port** int: Port to bind to
+- **Routes** []*web.Route: Custom endpoints
+- **Sessions** bool: Set JGoSession cookie
+- **SessionKey** string: Key used to generate and validate session tokens
+- **StaticDir** string: Static assets
+- **TemplateDir** string: Go HTML templates
+- **InitResponse** func(r *web.Response): Function called before processing every response
 
 #### Example usage
 
