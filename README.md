@@ -5,6 +5,7 @@
 - **Sessions**: Set JGoSession cookie
 - **StaticDir**: Static assets
 - **TemplateDir**: Go HTML templates
+- **InitResponse**: Function called before processing every response
 
 #### Example usage
 
@@ -20,7 +21,7 @@ func main() {
         Port: 80,
         Routes: []web.Route{{
             Pattern: "/hello",
-            Handler: func(r *web.Request) {
+            Handler: func(r *web.Response) {
                 r.Write("world")
             },
         }},
