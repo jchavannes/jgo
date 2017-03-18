@@ -3,6 +3,7 @@
 - **Port**: Port to bind to
 - **Routes**: Custom endpoints
 - **Sessions**: Set JGoSession cookie
+- **SessionKey**: Key used to generate and validate session tokens
 - **StaticDir**: Static assets
 - **TemplateDir**: Go HTML templates
 - **InitResponse**: Function called before processing every response
