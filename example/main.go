@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/jchavannes/jgo/example/auth"
 	"github.com/jchavannes/jgo/example/db"
 	"github.com/jchavannes/jgo/web"
 	"net/http"
@@ -12,7 +11,12 @@ var (
 	defaultRoute = web.Route{
 		Pattern: "/",
 		Handler: func(r *web.Response) {
-			r.Render()
+			session, err := db.GetSession(r.Session.CookieId)
+			if session.IsLoggedIn() {
+				r.SetRedirect(getBaseUrl(r.Request) + "lobby")
+			} else {
+				r.Render()
+			}
 		},
 	}
 
@@ -27,25 +31,19 @@ var (
 		Pattern: "/signup-submit",
 		CsrfProtect: true,
 		Handler: func(r *web.Response) {
-			request := r.Request
-			username := request.GetFormValue("username")
-			password := request.GetFormValue("password")
-			user, err := auth.Signup(username, password)
-			if err != nil {
-				fmt.Printf("Error signing up: %s\n", err)
-				r.SetResponseCode(http.StatusConflict)
-				r.Write("User already exists.")
-				return
-			}
+			username := r.Request.GetFormValue("username")
+			password := r.Request.GetFormValue("password")
+
 			session, err := db.GetSession(r.Session.CookieId)
 			if err != nil {
 				fmt.Printf("Error getting session: %s\n", err)
 				return
 			}
-			session.UserId = user.Id
-			err = session.Save()
+
+			_, err = session.Signup(username, password)
 			if err != nil {
-				fmt.Printf("Error saving session: %s\n", err)
+				fmt.Printf("Error signing up: %s\n", err)
+				r.SetResponseCode(http.StatusConflict)
 				return
 			}
 		},
@@ -62,26 +60,20 @@ var (
 		Pattern: "/login-submit",
 		CsrfProtect: true,
 		Handler: func(r *web.Response) {
-			request := r.Request
-			username := request.GetFormValue("username")
-			password := request.GetFormValue("password")
-			user, err := auth.Login(username, password)
-			if err != nil {
-				fmt.Printf("Error logging in: %s\n", err)
-				r.SetResponseCode(http.StatusUnauthorized)
-				r.Write(err.Error())
-				return
-			}
+			username := r.Request.GetFormValue("username")
+			password := r.Request.GetFormValue("password")
+
 			session, err := db.GetSession(r.Session.CookieId)
 			if err != nil {
 				fmt.Printf("Error getting session: %s\n", err)
 				return
 			}
-			session.UserId = user.Id
-			err = session.Save()
+
+			_, err = session.Login(username, password)
 			if err != nil {
-				fmt.Printf("Error saving session: %s\n", err)
-				return
+				fmt.Printf("Error logging in: %s\n", err)
+				r.SetResponseCode(http.StatusUnauthorized)
+				r.Write(err.Error())
 			}
 		},
 	}
@@ -90,32 +82,32 @@ var (
 		Pattern: "/lobby",
 		Handler: func(r *web.Response) {
 			session, err := db.GetSession(r.Session.CookieId)
-			if err != nil {
-				fmt.Printf("Error getting session: %s\n", err)
-				r.SetResponseCode(http.StatusUnauthorized)
-				r.SetRedirect("/")
-				return
+			if err == nil {
+				user, err := db.GetUser(db.User{
+					Id: session.UserId,
+				})
+				if err == nil {
+					r.Helper["Username"] = user.Username
+					r.Render()
+					return
+				}
 			}
-			user, err := db.GetUser(db.User{
-				Id: session.UserId,
-			})
-			if err != nil {
-				fmt.Printf("Error getting user: %s\n", err)
-				r.SetResponseCode(http.StatusUnauthorized)
-				r.SetRedirect("/")
-				return
-			}
-			r.Helper["Username"] = user.Username
-			r.Render()
+			fmt.Printf("Error getting user: %s\n", err)
+			r.SetResponseCode(http.StatusUnauthorized)
+			r.SetRedirect("/")
 		},
 	}
 
 	initRequest = func(r *web.Response) {
-		baseUrl := r.Request.GetHeader("AppPath")
+		r.Helper["BaseUrl"] = getBaseUrl(r.Request)
+	}
+
+	getBaseUrl = func(r web.Request) string {
+		baseUrl := r.GetHeader("AppPath")
 		if baseUrl == "" {
 			baseUrl = "/"
 		}
-		r.Helper["BaseUrl"] = baseUrl
+		return baseUrl
 	}
 )
 

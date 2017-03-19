@@ -88,4 +88,5 @@ func (r *Response) RenderTemplate(templateName string) {
 
 func (r *Response) SetRedirect(location string) {
 	r.Writer.Header().Set("Location", location)
+	r.SetResponseCode(http.StatusFound)
 }
