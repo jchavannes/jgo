@@ -48,7 +48,7 @@ func (s *Server) setupHandlers() {
 		fmt.Printf("Setting pattern: %s\n", route.Pattern)
 		s.Router.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
 			response := Response{
-				Helper: make(map[string]string),
+				Helper: make(map[string]interface{}),
 				Writer: w,
 				Request: Request{
 					HttpRequest: *r,

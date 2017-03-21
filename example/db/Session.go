@@ -3,7 +3,6 @@ package db
 import (
 	"golang.org/x/crypto/bcrypt"
 	"fmt"
-	"net/http"
 	"errors"
 )
 

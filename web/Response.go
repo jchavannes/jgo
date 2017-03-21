@@ -11,7 +11,7 @@ import (
 const COOKIE_NAME = "JGoSession"
 
 type Response struct {
-	Helper      map[string]string
+	Helper      map[string]interface{}
 	Request     Request
 	Session     Session
 	TemplateDir string

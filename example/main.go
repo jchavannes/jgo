@@ -11,7 +11,7 @@ var (
 	defaultRoute = web.Route{
 		Pattern: "/",
 		Handler: func(r *web.Response) {
-			session, err := db.GetSession(r.Session.CookieId)
+			session, _ := db.GetSession(r.Session.CookieId)
 			if session.IsLoggedIn() {
 				r.SetRedirect(getBaseUrl(r.Request) + "lobby")
 			} else {
