@@ -53,10 +53,11 @@ func (s *Server) setupHandlers() {
 				Request: Request{
 					HttpRequest: *r,
 				},
+				Server: s,
 				TemplateDir: s.TemplateDir,
 			}
 			if s.Sessions {
-				response.InitSession(s.SessionKey)
+				response.InitSession()
 			}
 			s.InitResponse(&response)
 			response.Helper["CsrfToken"] = response.Session.GetCsrfToken()

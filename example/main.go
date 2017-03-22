@@ -11,19 +11,14 @@ var (
 	defaultRoute = web.Route{
 		Pattern: "/",
 		Handler: func(r *web.Response) {
-			session, _ := db.GetSession(r.Session.CookieId)
-			if session.IsLoggedIn() {
-				r.SetRedirect(getBaseUrl(r.Request) + "lobby")
-			} else {
-				r.Render()
-			}
+			redirectOrRender(r, "lobby")
 		},
 	}
 
 	signupRoute = web.Route{
 		Pattern: "/signup",
 		Handler: func(r *web.Response) {
-			r.Render()
+			redirectOrRender(r, "lobby")
 		},
 	}
 
@@ -52,7 +47,7 @@ var (
 	loginRoute = web.Route{
 		Pattern: "/login",
 		Handler: func(r *web.Response) {
-			r.Render()
+			redirectOrRender(r, "lobby")
 		},
 	}
 
@@ -78,6 +73,14 @@ var (
 		},
 	}
 
+	logoutRoute = web.Route{
+		Pattern: "/logout",
+		Handler: func(r *web.Response) {
+			r.ResetOrCreateSession()
+			r.SetRedirect(getBaseUrl(r.Request))
+		},
+	}
+
 	lobbyRoute = web.Route{
 		Pattern: "/lobby",
 		Handler: func(r *web.Response) {
@@ -93,8 +96,7 @@ var (
 				}
 			}
 			fmt.Printf("Error getting user: %s\n", err)
-			r.SetResponseCode(http.StatusUnauthorized)
-			r.SetRedirect("/")
+			r.SetRedirect(getBaseUrl(r.Request))
 		},
 	}
 
@@ -108,6 +110,15 @@ var (
 			baseUrl = "/"
 		}
 		return baseUrl
+	}
+
+	redirectOrRender = func (r *web.Response, url string) {
+		session, _ := db.GetSession(r.Session.CookieId)
+		if session.IsLoggedIn() {
+			r.SetRedirect(getBaseUrl(r.Request) + url)
+		} else {
+			r.Render()
+		}
 	}
 )
 
@@ -124,6 +135,7 @@ func main() {
 			signupSubmitRoute,
 			loginRoute,
 			loginSubmitRoute,
+			logoutRoute,
 			lobbyRoute,
 		},
 	}

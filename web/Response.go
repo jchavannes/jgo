@@ -14,6 +14,7 @@ type Response struct {
 	Helper      map[string]interface{}
 	Request     Request
 	Session     Session
+	Server      *Server
 	TemplateDir string
 	Writer      http.ResponseWriter
 }
@@ -23,9 +24,9 @@ func (r *Response) IsValidCsrf() bool {
 	return err == nil && requestCsrfToken == r.Session.GetCsrfToken()
 }
 
-func (r *Response) ResetOrCreateSession(sessionKey string) {
+func (r *Response) ResetOrCreateSession() {
 	r.Session = Session{
-		CookieId: token.GetSessionToken(sessionKey),
+		CookieId: token.GetSessionToken(r.Server.SessionKey),
 	}
 	cookie := http.Cookie{
 		Name: COOKIE_NAME,
@@ -37,18 +38,18 @@ func (r *Response) ResetOrCreateSession(sessionKey string) {
 	http.SetCookie(r.Writer, &cookie)
 }
 
-func (r *Response) InitSession(sessionKey string) {
+func (r *Response) InitSession() {
 	cookie := r.Request.GetCookie(COOKIE_NAME)
 	var validSession bool
 	if cookie != "" {
-		validSession = token.Validate(cookie, sessionKey)
+		validSession = token.Validate(cookie, r.Server.SessionKey)
 	}
 	if validSession {
 		r.Session = Session{
 			CookieId: cookie,
 		}
 	} else {
-		r.ResetOrCreateSession(sessionKey)
+		r.ResetOrCreateSession()
 	}
 }
 
