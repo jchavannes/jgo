@@ -1,5 +1,23 @@
 ## JGo Web
 
+#### Features
+
+- Simple routing
+- Automatic template rendering based on request path
+- Response object with support for common functionality, e.g.:
+  - Getting form and header data
+  - Redirects
+- Sessions with validatable tokens
+- Enforceable CSRF tokens
+- Websockets (coming soon)
+- Example app with:
+  - User accounts
+  - Shared HTML templates (e.g. header)
+  - SQLite database
+  - Chatroom
+
+#### Options
+
 - **Port** int: Port to bind to
 - **Routes** []*web.Route: Custom endpoints
 - **Sessions** bool: Set JGoSession cookie
@@ -30,9 +48,3 @@ func main() {
     server.Run()
 }
 ```
-
----
-
-#### Todo
-
-- Web sockets
