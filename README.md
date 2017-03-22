@@ -36,4 +36,3 @@ func main() {
 #### Todo
 
 - Web sockets
-- Authentication example
