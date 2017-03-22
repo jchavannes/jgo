@@ -6,6 +6,7 @@ import (
 	"time"
 	"github.com/jchavannes/jgo/token"
 	"fmt"
+	"github.com/gorilla/websocket"
 )
 
 const COOKIE_NAME = "JGoSession"
@@ -90,4 +91,13 @@ func (r *Response) RenderTemplate(templateName string) {
 func (r *Response) SetRedirect(location string) {
 	r.Writer.Header().Set("Location", location)
 	r.SetResponseCode(http.StatusFound)
+}
+
+func (r *Response) GetWebSocket() (*websocket.Conn, error) {
+	upgrader := websocket.Upgrader{}
+	conn, err := upgrader.Upgrade(r.Writer, &r.Request.HttpRequest, nil)
+	if err != nil {
+		return nil, err
+	}
+	return conn, nil
 }

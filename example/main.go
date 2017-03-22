@@ -100,6 +100,28 @@ var (
 		},
 	}
 
+	chatRoute = web.Route{
+		Pattern: "/chat",
+		Handler: func(r *web.Response) {
+			conn, err := r.GetWebSocket()
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			for {
+				messageType, p, err := conn.ReadMessage()
+				fmt.Printf("Received message (message type: %d): %s\n", messageType, p)
+				if err != nil {
+					return
+				}
+				if err = conn.WriteMessage(messageType, p); err != nil {
+					return
+				}
+			}
+		},
+	}
+
 	initRequest = func(r *web.Response) {
 		r.Helper["BaseUrl"] = getBaseUrl(r.Request)
 	}
@@ -112,7 +134,7 @@ var (
 		return baseUrl
 	}
 
-	redirectOrRender = func (r *web.Response, url string) {
+	redirectOrRender = func(r *web.Response, url string) {
 		session, _ := db.GetSession(r.Session.CookieId)
 		if session.IsLoggedIn() {
 			r.SetRedirect(getBaseUrl(r.Request) + url)
@@ -137,6 +159,7 @@ func main() {
 			loginSubmitRoute,
 			logoutRoute,
 			lobbyRoute,
+			chatRoute,
 		},
 	}
 
