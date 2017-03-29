@@ -14,11 +14,7 @@ func GetUser(user User) (User, error) {
 	if user.Id == 0 && user.Username == "" {
 		return user, errors.New("Must set either Id or Username.")
 	}
-	db, err := getDb()
-	if err != nil {
-		return user, err
-	}
-	result := db.Find(&user, &user)
+	result := find(&user, &user)
 	return user, result.Error
 }
 
@@ -27,13 +23,6 @@ func CreateUser(username string, hashedPassword string) (User, error) {
 		Username: username,
 		PasswordHash: string(hashedPassword),
 	}
-	db, err := getDb()
-	if err != nil {
-		return user, err
-	}
-	result := db.Create(&user)
-	if result.Error != nil {
-		return user, result.Error
-	}
-	return user, nil
+	result := create(&user)
+	return user, result.Error
 }

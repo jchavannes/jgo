@@ -1,10 +1,23 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/gorilla/websocket"
 	"github.com/jchavannes/jgo/example/db"
 	"github.com/jchavannes/jgo/web"
+	"github.com/jchavannes/jgo/chat"
+	"golang.org/x/net/html"
 	"net/http"
+	"time"
+)
+
+const (
+	WS_CTS_SendHeartBeat = "SendHeartBeat"
+	WS_CTS_SendMessage = "SendMessage"
+	WS_STC_ReceiveMessage = "ReceiveMessage"
+	WS_STC_UserEnter = "UserEnter"
+	WS_STC_UserExit = "UserExit"
 )
 
 var (
@@ -108,6 +121,20 @@ var (
 				fmt.Println(err)
 				return
 			}
+			session, err := db.GetSession(r.Session.CookieId)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			user, err := db.GetUser(db.User{
+				Id: session.UserId,
+			})
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			createChatroom("lobby", &user, conn)
 
 			for {
 				messageType, p, err := conn.ReadMessage()
@@ -144,6 +171,15 @@ var (
 	}
 )
 
+type WSMessage struct {
+	Type string
+	Data string
+}
+
+type WS_SendMessage struct {
+	Message string
+}
+
 func main() {
 	server := web.Server{
 		Port: 8248,
@@ -164,4 +200,80 @@ func main() {
 	}
 
 	server.Run()
+}
+
+func createChatroom(chatroomName string, user *db.User, ws *websocket.Conn) {
+	subscription := chat.Subscribe(chatroomName, &chat.User{
+		Id: user.Id,
+		Username: user.Username,
+	})
+	defer subscription.Unsubscribe()
+	waitToClose := make(chan bool)
+
+	go func() {
+		for {
+			_, msg, err := ws.ReadMessage()
+			if err != nil {
+				break
+			}
+			var wsMessage WSMessage
+			err = json.Unmarshal([]byte(msg), &wsMessage)
+			if err != nil {
+				fmt.Printf("err: %#v\n", err)
+				continue
+			}
+			switch wsMessage.Type {
+			case WS_CTS_SendMessage:
+				var wsSendMessage WS_SendMessage
+				err = json.Unmarshal([]byte(wsMessage.Data), &wsSendMessage)
+				if err == nil {
+					message := db.Message{
+						Date: time.Now().Unix(),
+						Message: html.EscapeString(wsSendMessage.Message),
+						Chatroom: chatroomName,
+						User: *user,
+						UserId: user.Id,
+					}
+					fmt.Printf("Message: %#v\n", message)
+					message.Save()
+					subscription.SendMessage(&chat.Message{
+						Id: message.Id,
+						Date: message.Date,
+						Message: message.Message,
+						User: &chat.User{
+							Id: message.User.Id,
+							Username: message.User.Username,
+						},
+					})
+				}
+			}
+		}
+		waitToClose <- true
+	}()
+
+	var messageToSend *chat.Message
+	var userToSend *chat.User
+	for {
+		select {
+		case messageToSend = <-subscription.Messages:
+			sendDataToWebSocket(ws, messageToSend, WS_STC_ReceiveMessage)
+		case userToSend = <-subscription.UserEnter:
+			sendDataToWebSocket(ws, userToSend, WS_STC_UserEnter)
+		case userToSend = <-subscription.UserExit:
+			sendDataToWebSocket(ws, userToSend, WS_STC_UserExit)
+		case <-waitToClose:
+
+			return
+		}
+	}
+}
+
+func sendDataToWebSocket(ws *websocket.Conn, value interface{}, messageType string) {
+	data, err := json.Marshal(value)
+	if err != nil {
+		fmt.Printf("err: %#v\n", err)
+		return
+	}
+	msg := WSMessage{Type: messageType, Data: string(data)}
+	ws.WriteJSON(msg)
 }

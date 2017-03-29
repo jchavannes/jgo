@@ -2,16 +2,21 @@
 
 <div class="jumbotron">
     <div class="container">
-
         <br/><br/><br/>
         <h1>Lobby</h1>
-
-        <br/><br/>
-        <p>
-            The lobby: {{ .Username }}...
-        </p>
-
+        <p>Welcome, {{ .Username }}!</p>
     </div>
+    <br/>
+    <div class="container">
+        <div id="lobby-chat" class="chatroom col-md-6"></div>
+        <div id="user-list" class="col-md-6"></div>
+    </div>
+    <script type="text/javascript">
+        $(function() {
+            JGoExampleApp.Chat.LobbyChat($("#lobby-chat"));
+            JGoExampleApp.Chat.UserList($("#user-list"));
+        });
+    </script>
 </div>
 
 {{ template "footer.html" . }}
