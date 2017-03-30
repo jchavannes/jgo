@@ -36,27 +36,47 @@ var (
 )
 
 func (s *Server) Run() {
-	s.addTemplatesRoute()
 	s.setupHandlers()
+	s.addCatchAllRoute()
 	s.startServer()
 }
 
-func (s *Server) addTemplatesRoute() {
-	if len(s.TemplatesDir) > 0 && ! s.DisableAutoRender {
-		s.Routes = append(s.Routes, Route{
-			Pattern: "/",
-			Name: "Automatic renderer - templates directory: " + s.TemplatesDir,
-			Handler: func(r *Response) {
-				templateName := r.Request.GetPotentialFilename()
+func (s *Server) addCatchAllRoute() {
+	if len(s.StaticFilesDir) > 0 {
+		fmt.Printf("Static files directory: %s\n", s.StaticFilesDir)
+	}
+	if len(s.TemplatesDir) > 0 {
+		fmt.Printf("Templates directory: %s\n", s.TemplatesDir)
+	}
+	s.router.PathPrefix("/").Handler(Handler{
+		Handler: func(w http.ResponseWriter, r *http.Request) {
+			response := getResponse(w, r, s)
+			defer response.LogComplete()
+
+			if len(s.StaticFilesDir) > 0 {
+				allowedFileTypes := DefaultAllowedFileExtensions
+				if len(s.AllowedExtensions) > 0 {
+					allowedFileTypes = s.AllowedExtensions
+				}
+				for _, fileType := range allowedFileTypes {
+					if strings.HasSuffix(response.Request.HttpRequest.URL.Path, "." + fileType) || fileType == "*" {
+						http.FileServer(http.Dir(s.StaticFilesDir)).ServeHTTP(response.Writer, &response.Request.HttpRequest)
+						return
+					}
+				}
+			}
+
+			if len(s.TemplatesDir) > 0 && ! s.DisableAutoRender {
+				templateName := response.Request.GetPotentialFilename()
 
 				if len(templateName) == 0 {
 					templateName = "index"
 				}
 
-				r.RenderTemplate(templateName)
-			},
-		})
-	}
+				response.RenderTemplate(templateName)
+			}
+		},
+	})
 }
 
 func (s *Server) setupHandlers() {
@@ -69,47 +89,35 @@ func (s *Server) setupHandlers() {
 		}
 		fmt.Printf("Adding pattern to router: %s%s\n", route.Pattern, name)
 		s.router.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
-			response := Response{
-				Helper: make(map[string]interface{}),
-				Writer: w,
-				Request: Request{
-					HttpRequest: *r,
-				},
-				Server: s,
-			}
-			if s.UseSessions {
-				response.InitSession()
-			}
-			if s.PreHandler != nil {
-				s.PreHandler(&response)
-			}
-			response.Helper["CsrfToken"] = response.Session.GetCsrfToken()
+			response := getResponse(w, r, s)
+			defer response.LogComplete()
 			if route.CsrfProtect && ! response.IsValidCsrf() {
 				response.SetResponseCode(http.StatusForbidden)
 			} else {
 				route.Handler(&response)
 			}
-			fmt.Printf("Handled request: %#v\n", r.URL.Path)
 		})
+
 	}
-	if len(s.StaticFilesDir) > 0 {
-		fmt.Printf("Adding static file handler: %s\n", s.StaticFilesDir)
-		handler := Handler{
-			Handler: func(w http.ResponseWriter, r *http.Request) {
-				allowedFileTypes := DefaultAllowedFileExtensions
-				if len(s.AllowedExtensions) > 0 {
-					allowedFileTypes = s.AllowedExtensions
-				}
-				for _, fileType := range allowedFileTypes {
-					if strings.HasSuffix(r.URL.Path, "." + fileType) || fileType == "*" {
-						http.FileServer(http.Dir(s.StaticFilesDir)).ServeHTTP(w, r)
-						return
-					}
-				}
-			},
-		}
-		s.router.PathPrefix("/").Handler(handler)
+}
+
+func getResponse(w http.ResponseWriter, r *http.Request, s *Server) Response {
+	response := Response{
+		Helper: make(map[string]interface{}),
+		Writer: w,
+		Request: Request{
+			HttpRequest: *r,
+		},
+		Server: s,
 	}
+	if s.UseSessions {
+		response.InitSession()
+	}
+	if s.PreHandler != nil {
+		s.PreHandler(&response)
+	}
+	response.Helper["CsrfToken"] = response.Session.GetCsrfToken()
+	return response
 }
 
 func (s *Server) startServer() {

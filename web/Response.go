@@ -72,6 +72,7 @@ func (r *Response) Render() {
 
 func (r *Response) RenderTemplate(templateName string) {
 	renderer, err := GetRenderer(r.Server.TemplatesDir)
+
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -82,6 +83,7 @@ func (r *Response) RenderTemplate(templateName string) {
 		templateName + ".html",
 		"404.html",
 	}, r.Writer, r.Helper)
+
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -99,4 +101,8 @@ func (r *Response) GetWebSocket() (*websocket.Conn, error) {
 		return nil, err
 	}
 	return conn, nil
+}
+
+func (r *Response) LogComplete() {
+	fmt.Printf("Handled request: %#v\n", r.Request.HttpRequest.URL.Path)
 }
