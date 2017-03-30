@@ -9,7 +9,7 @@
   - Redirects
 - Sessions with validatable tokens
 - Enforceable CSRF tokens
-- Websockets (coming soon)
+- WebSockets
 - Example app with:
   - User accounts
   - Shared HTML templates (e.g. header)
@@ -18,13 +18,13 @@
 
 #### Options
 
-- **Port** int: Port to bind to
-- **Routes** []*web.Route: Custom endpoints
-- **Sessions** bool: Set JGoSession cookie
-- **SessionKey** string: Key used to generate and validate session tokens
-- **StaticDir** string: Static assets
-- **TemplateDir** string: Go HTML templates
-- **InitResponse** func(r *web.Response): Function called before processing every response
+- **Port** _int_: Port to bind to
+- **Routes** _[]*web.Route_: Custom endpoints
+- **Sessions** _bool_: Set JGoSession cookie
+- **SessionKey** _string_: Key used to generate and validate session tokens
+- **StaticDir** _string_: Static assets
+- **TemplateDir** _string_: Go HTML templates
+- **InitResponse** _func(r *web.Response)_: Function called before processing every response
 
 #### Example usage
 

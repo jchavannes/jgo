@@ -134,18 +134,7 @@ var (
 				return
 			}
 
-			createChatroom("lobby", &user, conn)
-
-			for {
-				messageType, p, err := conn.ReadMessage()
-				fmt.Printf("Received message (message type: %d): %s\n", messageType, p)
-				if err != nil {
-					return
-				}
-				if err = conn.WriteMessage(messageType, p); err != nil {
-					return
-				}
-			}
+			createChatConnection("lobby", &user, conn)
 		},
 	}
 
@@ -202,7 +191,7 @@ func main() {
 	server.Run()
 }
 
-func createChatroom(chatroomName string, user *db.User, ws *websocket.Conn) {
+func createChatConnection(chatroomName string, user *db.User, ws *websocket.Conn) {
 	subscription := chat.Subscribe(chatroomName, &chat.User{
 		Id: user.Id,
 		Username: user.Username,
@@ -262,7 +251,6 @@ func createChatroom(chatroomName string, user *db.User, ws *websocket.Conn) {
 		case userToSend = <-subscription.UserExit:
 			sendDataToWebSocket(ws, userToSend, WS_STC_UserExit)
 		case <-waitToClose:
-
 			return
 		}
 	}
