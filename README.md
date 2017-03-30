@@ -18,13 +18,15 @@
 
 #### Options
 
+- **AllowedExtensions** _[]string_: Allowed file extensions for static files (`*` for all)
+- **DisableAutoRender** _bool_: Disables automatically rendering templates
 - **Port** _int_: Port to bind to
-- **Routes** _[]*web.Route_: Custom endpoints
-- **Sessions** _bool_: Set JGoSession cookie
+- **PreHandler** _func(*web.Response)_: Function called before processing responses
+- **Routes** _[]web.Route_: Custom endpoints
 - **SessionKey** _string_: Key used to generate and validate session tokens
-- **StaticDir** _string_: Static assets
-- **TemplateDir** _string_: Go HTML templates
-- **InitResponse** _func(r *web.Response)_: Function called before processing every response
+- **StaticFilesDir** _string_: Static assets
+- **TemplatesDir** _string_: Go HTML templates
+- **UseSessions** _bool_: Set JGoSession cookie
 
 #### Example usage
 

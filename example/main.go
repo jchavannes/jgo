@@ -138,7 +138,7 @@ var (
 		},
 	}
 
-	initRequest = func(r *web.Response) {
+	preHandler = func(r *web.Response) {
 		r.Helper["BaseUrl"] = getBaseUrl(r.Request)
 	}
 
@@ -172,10 +172,10 @@ type WS_SendMessage struct {
 func main() {
 	server := web.Server{
 		Port: 8248,
-		Sessions: true,
-		TemplateDir: "templates",
-		StaticDir: "pub",
-		InitResponse: initRequest,
+		UseSessions: true,
+		TemplatesDir: "templates",
+		StaticFilesDir: "pub",
+		PreHandler: preHandler,
 		Routes: []web.Route{
 			defaultRoute,
 			signupRoute,

@@ -12,12 +12,11 @@ import (
 const COOKIE_NAME = "JGoSession"
 
 type Response struct {
-	Helper      map[string]interface{}
-	Request     Request
-	Session     Session
-	Server      *Server
-	TemplateDir string
-	Writer      http.ResponseWriter
+	Helper  map[string]interface{}
+	Request Request
+	Server  *Server
+	Session Session
+	Writer  http.ResponseWriter
 }
 
 func (r *Response) IsValidCsrf() bool {
@@ -72,7 +71,7 @@ func (r *Response) Render() {
 }
 
 func (r *Response) RenderTemplate(templateName string) {
-	renderer, err := GetRenderer(r.TemplateDir)
+	renderer, err := GetRenderer(r.Server.TemplatesDir)
 	if err != nil {
 		fmt.Println(err)
 	}
