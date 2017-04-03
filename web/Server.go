@@ -10,13 +10,13 @@ import (
 
 type Server struct {
 	AllowedExtensions []string
-	DisableAutoRender bool
 	Port              int
 	PreHandler        func(*Response)
 	Routes            []Route
 	SessionKey        string
 	StaticFilesDir    string
 	TemplatesDir      string
+	UseAutoRender     bool
 	UseSessions       bool
 	router            *mux.Router
 }
@@ -35,10 +35,10 @@ var (
 	}
 )
 
-func (s *Server) Run() {
+func (s *Server) Run() error {
 	s.setupHandlers()
 	s.addCatchAllRoute()
-	s.startServer()
+	return s.startServer()
 }
 
 func (s *Server) addCatchAllRoute() {
@@ -66,7 +66,7 @@ func (s *Server) addCatchAllRoute() {
 				}
 			}
 
-			if len(s.TemplatesDir) > 0 && ! s.DisableAutoRender {
+			if len(s.TemplatesDir) > 0 && s.UseAutoRender {
 				templateName := response.Request.GetPotentialFilename()
 
 				if len(templateName) == 0 {
@@ -112,22 +112,19 @@ func getResponse(w http.ResponseWriter, r *http.Request, s *Server) Response {
 	}
 	if s.UseSessions {
 		response.InitSession()
+		response.Helper["CsrfToken"] = response.Session.GetCsrfToken()
 	}
 	if s.PreHandler != nil {
 		s.PreHandler(&response)
 	}
-	response.Helper["CsrfToken"] = response.Session.GetCsrfToken()
 	return response
 }
 
-func (s *Server) startServer() {
+func (s *Server) startServer() error {
 	srv := &http.Server{
 		Handler: s.router,
 		Addr: ":" + strconv.Itoa(s.Port),
 	}
 	fmt.Printf("Starting server on port %d...\n", s.Port)
-	err := srv.ListenAndServe()
-	if err != nil {
-		fmt.Println(err)
-	}
+	return srv.ListenAndServe()
 }

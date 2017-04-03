@@ -176,7 +176,6 @@ func main() {
 		TemplatesDir: "templates",
 		StaticFilesDir: "pub",
 		PreHandler: preHandler,
-		DisableAutoRender: true,
 		Routes: []web.Route{
 			defaultRoute,
 			signupRoute,

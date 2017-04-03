@@ -7,6 +7,7 @@ import (
 	"github.com/jchavannes/jgo/token"
 	"fmt"
 	"github.com/gorilla/websocket"
+	"encoding/json"
 )
 
 const COOKIE_NAME = "JGoSession"
@@ -59,6 +60,16 @@ func (r *Response) SetResponseCode(code int) {
 
 func (r *Response) Write(s string) {
 	r.Writer.Write([]byte(s))
+}
+
+func (r *Response) WriteJson(i interface{}, pretty bool) {
+	var text []byte
+	if pretty {
+		text, _ = json.MarshalIndent(i, "", "  ")
+	} else {
+		text, _ = json.Marshal(i)
+	}
+	r.Write(string(text))
 }
 
 func (r *Response) Render() {
