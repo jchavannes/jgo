@@ -72,16 +72,16 @@ func (r *Response) WriteJson(i interface{}, pretty bool) {
 	r.Write(string(text))
 }
 
-func (r *Response) Render() {
+func (r *Response) Render() error {
 	requestURI := r.Request.GetURI()
 	templateName := requestURI[1:]
 	if templateName == "" {
 		templateName = "index"
 	}
-	r.RenderTemplate(templateName)
+	return r.RenderTemplate(templateName)
 }
 
-func (r *Response) RenderTemplate(templateName string) {
+func (r *Response) RenderTemplate(templateName string) error {
 	renderer, err := GetRenderer(r.Server.TemplatesDir)
 
 	if err != nil {
@@ -95,9 +95,7 @@ func (r *Response) RenderTemplate(templateName string) {
 		"404.html",
 	}, r.Writer, r.Helper)
 
-	if err != nil {
-		fmt.Println(err)
-	}
+	return err
 }
 
 func (r *Response) SetRedirect(location string) {

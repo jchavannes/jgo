@@ -10,6 +10,7 @@ import (
 
 type Server struct {
 	AllowedExtensions []string
+	NotFoundHandler   func(*Response)
 	Port              int
 	PreHandler        func(*Response)
 	Routes            []Route
@@ -73,7 +74,14 @@ func (s *Server) addCatchAllRoute() {
 					templateName = "index"
 				}
 
-				response.RenderTemplate(templateName)
+				err := response.RenderTemplate(templateName)
+				if err == nil {
+					return
+				}
+			}
+
+			if s.NotFoundHandler != nil {
+				s.NotFoundHandler(&response)
 			}
 		},
 	})
