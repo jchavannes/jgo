@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"encoding/json"
+	"errors"
 )
 
 const COOKIE_NAME = "JGoSession"
@@ -17,6 +18,7 @@ type Response struct {
 	Request Request
 	Server  *Server
 	Session Session
+	rcSet   bool
 	Writer  http.ResponseWriter
 }
 
@@ -54,8 +56,13 @@ func (r *Response) InitSession() {
 	}
 }
 
-func (r *Response) SetResponseCode(code int) {
+func (r *Response) SetResponseCode(code int) error {
+	if r.rcSet {
+		return errors.New("Response code already set")
+	}
 	r.Writer.WriteHeader(code)
+	r.rcSet = true
+	return nil
 }
 
 func (r *Response) Write(s string) {

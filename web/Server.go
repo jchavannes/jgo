@@ -102,10 +102,13 @@ func (s *Server) setupHandlers() {
 			if route.CsrfProtect && ! response.IsValidCsrf() {
 				response.SetResponseCode(http.StatusForbidden)
 			} else {
-				route.Handler(&response)
+				err := route.Handler(&response)
+				if err != nil {
+					response.SetResponseCode(http.StatusInternalServerError)
+					fmt.Printf("Error processing response: %#v\n", response)
+				}
 			}
 		})
-
 	}
 }
 

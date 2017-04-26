@@ -19,6 +19,7 @@
 #### Options
 
 - **AllowedExtensions** _[]string_: Allowed file extensions for static files (`*` for all)
+- **NotFoundHandler** _func(*Response)_: Function called if no route is found
 - **Port** _int_: Port to bind to
 - **PreHandler** _func(*web.Response)_: Function called before processing responses
 - **Routes** _[]web.Route_: Custom endpoints
