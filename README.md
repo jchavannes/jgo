@@ -1,6 +1,6 @@
 # JGo Web
 
-## Features
+## Overview
 
 - Simple routing
 - Automatic template rendering based on request path
@@ -18,9 +18,9 @@
 
 ## Docs
 
-GoDocs: [https://godoc.org/github.com/jchavannes/jgo](https://godoc.org/github.com/jchavannes/jgo)
+[https://godoc.org/github.com/jchavannes/jgo](https://godoc.org/github.com/jchavannes/jgo)
 
-## Usage
+## Example
 
 ```go
 package main
