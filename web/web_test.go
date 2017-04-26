@@ -6,15 +6,15 @@ import (
 )
 
 func ExampleResponse_SetResponseCode() {
-	route := web.Route{
+	web.Route{
 		Pattern: "/",
 		Handler: func(r *web.Response) {
 			r.SetResponseCode(http.StatusNotFound)
 		},
 	}
-	web.Server{
-		Routes: []web.Route{
-			route,
-		},
-	}
+}
+
+func ExampleCreateToken() {
+	token := web.CreateToken()
+	println(token)
 }
