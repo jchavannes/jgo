@@ -1,6 +1,6 @@
-## JGo Web
+# JGo Web
 
-#### Features
+## Features
 
 - Simple routing
 - Automatic template rendering based on request path
@@ -16,20 +16,11 @@
   - SQLite database
   - Chatroom
 
-#### Options
+## Docs
 
-- **AllowedExtensions** _[]string_: Allowed file extensions for static files (`*` for all)
-- **NotFoundHandler** _func(*Response)_: Function called if no route is found
-- **Port** _int_: Port to bind to
-- **PreHandler** _func(*web.Response)_: Function called before processing responses
-- **Routes** _[]web.Route_: Custom endpoints
-- **SessionKey** _string_: Key used to generate and validate session tokens
-- **StaticFilesDir** _string_: Static assets
-- **TemplatesDir** _string_: Go HTML templates
-- **UseAutoRender** _bool_: Automatically rendering templates
-- **UseSessions** _bool_: Set JGoSession cookie
+GoDocs: [https://godoc.org/github.com/jchavannes/jgo](https://godoc.org/github.com/jchavannes/jgo)
 
-#### Example usage
+## Usage
 
 ```go
 package main
@@ -51,3 +42,7 @@ func main() {
     server.Run()
 }
 ```
+
+## License
+
+See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
