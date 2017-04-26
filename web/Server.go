@@ -22,19 +22,14 @@ type Server struct {
 	router            *mux.Router
 }
 
-var (
-	AllFileExtensions = []string{
-		"*",
-	}
-
-	DefaultAllowedFileExtensions = []string{
-		"js",
-		"css",
-		"jpg",
-		"png",
-		"ico",
-	}
-)
+// Default extensions allowed for static files.
+const DefaultAllowedFileExtensions = []string{
+	"js",
+	"css",
+	"jpg",
+	"png",
+	"ico",
+}
 
 func (s *Server) Run() error {
 	s.setupHandlers()
@@ -102,11 +97,7 @@ func (s *Server) setupHandlers() {
 			if route.CsrfProtect && ! response.IsValidCsrf() {
 				response.SetResponseCode(http.StatusForbidden)
 			} else {
-				err := route.Handler(&response)
-				if err != nil {
-					response.SetResponseCode(http.StatusInternalServerError)
-					fmt.Printf("Error processing response: %#v\n", response)
-				}
+				route.Handler(&response)
 			}
 		})
 	}

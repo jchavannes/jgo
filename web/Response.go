@@ -11,8 +11,11 @@ import (
 	"errors"
 )
 
+// Name of cookie used for sessions.
 const COOKIE_NAME = "JGoSession"
 
+// Response objects are passed to handlers to respond to requests.
+// Includes abstracted access to request and session information
 type Response struct {
 	Helper  map[string]interface{}
 	Request Request
@@ -22,11 +25,14 @@ type Response struct {
 	Writer  http.ResponseWriter
 }
 
+// Checks that CSRF token in request matches one for session.
+// Tokens are kept in memory and do not persist between instances or restarts.
 func (r *Response) IsValidCsrf() bool {
 	requestCsrfToken, err := r.Request.GetCsrfToken()
 	return err == nil && requestCsrfToken == r.Session.GetCsrfToken()
 }
 
+// Sets a new session cookie.
 func (r *Response) ResetOrCreateSession() {
 	r.Session = Session{
 		CookieId: token.GetSessionToken(r.Server.SessionKey),
@@ -41,6 +47,7 @@ func (r *Response) ResetOrCreateSession() {
 	http.SetCookie(r.Writer, &cookie)
 }
 
+// Either gets existing session token or creates a new one.
 func (r *Response) InitSession() {
 	cookie := r.Request.GetCookie(COOKIE_NAME)
 	var validSession bool
