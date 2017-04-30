@@ -3,6 +3,7 @@ package web
 import (
 	"net/http"
 	"errors"
+	"github.com/gorilla/mux"
 )
 
 type Request struct {
@@ -23,6 +24,11 @@ func (r *Request) GetCsrfToken() (string, error) {
 func (r *Request) GetFormValue(key string) string {
 	r.HttpRequest.ParseForm()
 	return r.HttpRequest.Form.Get(key)
+}
+
+func (r *Request) GetUrlNamedQueryVariable(key string) string {
+	vars := mux.Vars(&r.HttpRequest)
+	return vars[key]
 }
 
 func (r *Request) GetUrlParameter(key string) string {
