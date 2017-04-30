@@ -25,6 +25,10 @@ func (r *Request) GetFormValue(key string) string {
 	return r.HttpRequest.Form.Get(key)
 }
 
+func (r *Request) GetUrlParameter(key string) string {
+	return r.HttpRequest.URL.Query().Get(key)
+}
+
 func (r *Request) GetHeader(key string) string {
 	return r.HttpRequest.Header.Get(key)
 }

@@ -23,12 +23,14 @@ type Server struct {
 }
 
 // Default extensions allowed for static files.
-const DefaultAllowedFileExtensions = []string{
-	"js",
-	"css",
-	"jpg",
-	"png",
-	"ico",
+func GetDefaultAllowedFileExtensions() []string {
+	return []string{
+		"js",
+		"css",
+		"jpg",
+		"png",
+		"ico",
+	}
 }
 
 func (s *Server) Run() error {
@@ -50,7 +52,7 @@ func (s *Server) addCatchAllRoute() {
 			defer response.LogComplete()
 
 			if len(s.StaticFilesDir) > 0 {
-				allowedFileTypes := DefaultAllowedFileExtensions
+				allowedFileTypes := GetDefaultAllowedFileExtensions()
 				if len(s.AllowedExtensions) > 0 {
 					allowedFileTypes = s.AllowedExtensions
 				}
