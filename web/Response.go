@@ -72,6 +72,10 @@ func (r *Response) SetResponseCode(code int) error {
 	return nil
 }
 
+func (r *Response) SetHeader(key string, value string) {
+	r.Writer.Header().Set(key, value)
+}
+
 func (r *Response) Write(s string) {
 	r.Writer.Write([]byte(s))
 }
@@ -102,7 +106,7 @@ func (r *Response) RenderTemplate(templateName string) error {
 		fmt.Println(err)
 	}
 
-	r.Writer.Header().Set("Content-Type", "text/html")
+	r.SetHeader("Content-Type", "text/html")
 
 	err = renderer.Render([]string{
 		templateName + ".html",
@@ -113,7 +117,7 @@ func (r *Response) RenderTemplate(templateName string) error {
 }
 
 func (r *Response) SetRedirect(location string) {
-	r.Writer.Header().Set("Location", location)
+	r.SetHeader("Location", location)
 	r.SetResponseCode(http.StatusFound)
 }
 
