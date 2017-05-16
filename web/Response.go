@@ -130,6 +130,11 @@ func (r *Response) GetWebSocket() (*websocket.Conn, error) {
 	return conn, nil
 }
 
+func (r *Response) Error(err error, responseCode int) {
+	r.SetResponseCode(responseCode)
+	fmt.Printf("Error: %s\n", err.Error())
+}
+
 func (r *Response) LogComplete() {
 	fmt.Printf("Handled request: %#v\n", r.Request.HttpRequest.URL.Path)
 }

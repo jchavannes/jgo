@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"errors"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 )
 
 type Request struct {
@@ -49,6 +50,11 @@ func (r *Request) GetCookie(key string) string {
 
 func (r *Request) GetURI() string {
 	return r.HttpRequest.RequestURI
+}
+
+func (r *Request) GetBody() []byte {
+	body, _ := ioutil.ReadAll(r.HttpRequest.Body)
+	return body
 }
 
 func (r *Request) GetPotentialFilename() string {
