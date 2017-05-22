@@ -79,6 +79,8 @@ func (s *Server) addCatchAllRoute() {
 
 			if s.NotFoundHandler != nil {
 				s.NotFoundHandler(&response)
+			} else {
+				response.SetResponseCode(http.StatusNotFound)
 			}
 		},
 	})
