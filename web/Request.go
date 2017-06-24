@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/gorilla/mux"
 	"io/ioutil"
+	"strconv"
 )
 
 type Request struct {
@@ -25,6 +26,13 @@ func (r *Request) GetCsrfToken() (string, error) {
 func (r *Request) GetFormValue(key string) string {
 	r.HttpRequest.ParseForm()
 	return r.HttpRequest.Form.Get(key)
+}
+
+func (r *Request) GetFormValueInt(key string) int {
+	r.HttpRequest.ParseForm()
+	valString := r.HttpRequest.Form.Get(key)
+	i, _ := strconv.Atoi(valString)
+	return i
 }
 
 func (r *Request) GetUrlNamedQueryVariable(key string) string {

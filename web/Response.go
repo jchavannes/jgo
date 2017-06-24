@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/websocket"
 	"encoding/json"
 	"errors"
+	"github.com/jchavannes/jgo/jerr"
 )
 
 // Name of cookie used for sessions.
@@ -132,7 +133,7 @@ func (r *Response) GetWebSocket() (*websocket.Conn, error) {
 
 func (r *Response) Error(err error, responseCode int) {
 	r.SetResponseCode(responseCode)
-	fmt.Printf("Error: %s\n", err.Error())
+	fmt.Println(jerr.Get(fmt.Sprintf("Error with request: %#v", r.Request.HttpRequest.URL.Path), err))
 }
 
 func (r *Response) LogComplete() {
