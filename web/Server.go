@@ -30,6 +30,7 @@ func GetDefaultAllowedFileExtensions() []string {
 		"jpg",
 		"png",
 		"ico",
+		"gif",
 	}
 }
 
