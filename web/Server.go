@@ -16,6 +16,7 @@ type Server struct {
 	Routes            []Route
 	SessionKey        string
 	StaticFilesDir    string
+	StrictSlash	  bool
 	TemplatesDir      string
 	UseAutoRender     bool
 	UseSessions       bool
@@ -89,6 +90,7 @@ func (s *Server) addCatchAllRoute() {
 
 func (s *Server) setupHandlers() {
 	s.router = mux.NewRouter()
+	s.router.StrictSlash(s.StrictSlash)
 	for _, routeTemp := range s.Routes {
 		route := routeTemp
 		name := ""
