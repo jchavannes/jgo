@@ -10,13 +10,11 @@ import (
 
 type Server struct {
 	AllowedExtensions []string
-	NotFoundHandler   func(*Response)
 	Port              int
-	PreHandler        func(*Response)
-	Routes            []Route
+	Routers           []Router
 	SessionKey        string
 	StaticFilesDir    string
-	StrictSlash	  bool
+	StrictSlash       bool
 	TemplatesDir      string
 	UseAutoRender     bool
 	UseSessions       bool
@@ -48,65 +46,78 @@ func (s *Server) addCatchAllRoute() {
 	if len(s.TemplatesDir) > 0 {
 		fmt.Printf("Templates directory: %s\n", s.TemplatesDir)
 	}
-	s.router.PathPrefix("/").Handler(Handler{
-		Handler: func(w http.ResponseWriter, r *http.Request) {
-			response := getResponse(w, r, s)
-			defer response.LogComplete()
-
-			if len(s.StaticFilesDir) > 0 {
-				allowedFileTypes := GetDefaultAllowedFileExtensions()
-				if len(s.AllowedExtensions) > 0 {
-					allowedFileTypes = s.AllowedExtensions
+	for _, routerTemp := range s.Routers {
+		router := routerTemp
+		prefix := router.GetPatternPrefix()
+		s.router.PathPrefix(prefix).Handler(Handler{
+			Handler: func(w http.ResponseWriter, r *http.Request) {
+				response := getResponse(w, r, s)
+				defer response.LogComplete()
+				if router.PreHandler != nil {
+					router.PreHandler(&response)
 				}
-				for _, fileType := range allowedFileTypes {
-					if strings.HasSuffix(response.Request.HttpRequest.URL.Path, "." + fileType) || fileType == "*" {
-						http.FileServer(http.Dir(s.StaticFilesDir)).ServeHTTP(response.Writer, &response.Request.HttpRequest)
-						return
+
+				if prefix == "/" {
+					if len(s.StaticFilesDir) > 0 {
+						allowedFileTypes := GetDefaultAllowedFileExtensions()
+						if len(s.AllowedExtensions) > 0 {
+							allowedFileTypes = s.AllowedExtensions
+						}
+						for _, fileType := range allowedFileTypes {
+							if strings.HasSuffix(response.Request.HttpRequest.URL.Path, "." + fileType) || fileType == "*" {
+								http.FileServer(http.Dir(s.StaticFilesDir)).ServeHTTP(response.Writer, &response.Request.HttpRequest)
+								return
+							}
+						}
+					}
+
+					if len(s.TemplatesDir) > 0 && s.UseAutoRender {
+						templateName := response.Request.GetPotentialFilename()
+						if len(templateName) == 0 {
+							templateName = "index"
+						}
+						err := response.RenderTemplate(templateName)
+						if err == nil {
+							return
+						}
 					}
 				}
-			}
 
-			if len(s.TemplatesDir) > 0 && s.UseAutoRender {
-				templateName := response.Request.GetPotentialFilename()
-
-				if len(templateName) == 0 {
-					templateName = "index"
+				if router.NotFoundHandler != nil {
+					router.NotFoundHandler(&response)
 				}
-
-				err := response.RenderTemplate(templateName)
-				if err == nil {
-					return
-				}
-			}
-
-			if s.NotFoundHandler != nil {
-				s.NotFoundHandler(&response)
-			} else {
 				response.SetResponseCode(http.StatusNotFound)
-			}
-		},
-	})
+			},
+		})
+	}
 }
 
 func (s *Server) setupHandlers() {
 	s.router = mux.NewRouter()
 	s.router.StrictSlash(s.StrictSlash)
-	for _, routeTemp := range s.Routes {
-		route := routeTemp
-		name := ""
-		if len(route.Name) > 0 {
-			name = " (" + route.Name + ")"
-		}
-		fmt.Printf("Adding pattern to router: %s%s\n", route.Pattern, name)
-		s.router.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
-			response := getResponse(w, r, s)
-			defer response.LogComplete()
-			if route.CsrfProtect && ! response.IsValidCsrf() {
-				response.SetResponseCode(http.StatusForbidden)
-			} else {
-				route.Handler(&response)
+	for _, routerTemp := range s.Routers {
+		router := routerTemp
+		for _, routeTemp := range router.Routes {
+			route := routeTemp
+			name := ""
+			if len(route.Name) > 0 {
+				name = " (" + route.Name + ")"
 			}
-		})
+			pattern := router.GetRoutePattern(route)
+			fmt.Printf("Adding pattern to router: %s%s\n", pattern, name)
+			s.router.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+				response := getResponse(w, r, s)
+				if router.PreHandler != nil {
+					router.PreHandler(&response)
+				}
+				defer response.LogComplete()
+				if route.CsrfProtect && ! response.IsValidCsrf() {
+					response.SetResponseCode(http.StatusForbidden)
+				} else {
+					route.Handler(&response)
+				}
+			})
+		}
 	}
 }
 
@@ -122,9 +133,6 @@ func getResponse(w http.ResponseWriter, r *http.Request, s *Server) Response {
 	if s.UseSessions {
 		response.InitSession()
 		response.Helper["CsrfToken"] = response.Session.GetCsrfToken()
-	}
-	if s.PreHandler != nil {
-		s.PreHandler(&response)
 	}
 	return response
 }

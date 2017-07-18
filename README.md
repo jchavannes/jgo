@@ -32,11 +32,13 @@ import (
 func main() {
     server := web.Server{
         Port: 80,
-        Routes: []web.Route{{
-            Pattern: "/hello",
-            Handler: func(r *web.Response) {
-                r.Write("world")
-            },
+        Routers: []web.Router{{
+            Routes: []web.Route{{
+                Pattern: "/hello",
+                Handler: func(r *web.Response) {
+                    r.Write("world")
+                },
+            }},
         }},
     }
     server.Run()

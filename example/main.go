@@ -175,17 +175,19 @@ func main() {
 		UseSessions: true,
 		TemplatesDir: "templates",
 		StaticFilesDir: "pub",
-		PreHandler: preHandler,
-		Routes: []web.Route{
-			defaultRoute,
-			signupRoute,
-			signupSubmitRoute,
-			loginRoute,
-			loginSubmitRoute,
-			logoutRoute,
-			lobbyRoute,
-			chatRoute,
-		},
+		Routers: []web.Router{{
+			PreHandler: preHandler,
+			Routes: []web.Route{{
+				defaultRoute,
+				signupRoute,
+				signupSubmitRoute,
+				loginRoute,
+				loginSubmitRoute,
+				logoutRoute,
+				lobbyRoute,
+				chatRoute,
+			}},
+		}},
 	}
 
 	server.Run()
