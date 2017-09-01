@@ -1,18 +1,21 @@
 package jlog
 
-import "fmt"
-
-type LogLevel string
-
-const (
-	DEBUG   LogLevel = "debug"
-	DEFAULT LogLevel = "default"
+import (
+	"fmt"
+	"io"
 )
 
-var logLevel = DEFAULT
+var (
+	logLevel LogLevel = DEFAULT
+	logWriter io.Writer
+)
 
 func SetLogLevel(level LogLevel) {
 	logLevel = level
+}
+
+func SetLogWriter(writer io.Writer) {
+	logWriter = writer
 }
 
 func Log(message string) {
@@ -20,7 +23,11 @@ func Log(message string) {
 }
 
 func Logf(message string, a ...interface{}) {
-	fmt.Printf(message, a)
+	if logWriter != nil {
+		logWriter.Write([]byte(fmt.Sprintf(message, a...)))
+	} else {
+		fmt.Printf(message, a...)
+	}
 }
 
 func Debug(message string) {
@@ -29,6 +36,6 @@ func Debug(message string) {
 
 func Debugf(message string, a ...interface{}) {
 	if logLevel == DEBUG {
-		Logf(message, a)
+		Logf(message, a...)
 	}
 }
