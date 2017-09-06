@@ -12,7 +12,7 @@ type Logger struct {
 	writers  []LogWriter
 }
 
-func (l Logger) log(message string, level LogLevel) error {
+func (l *Logger) log(message string, level LogLevel) error {
 	logLine := LogLine{
 		Message: message,
 		Level:   level,
@@ -40,29 +40,29 @@ func (l Logger) log(message string, level LogLevel) error {
 	return returnError
 }
 
-func (l Logger) Log(message string, a ...interface{}) {
-	l.log(fmt.Sprintf(message, a), DEFAULT)
+func (l *Logger) Log(message string, a ...interface{}) {
+	l.log(fmt.Sprintf(message, a...), DEFAULT)
 }
 
-func (l Logger) Debug(message string, a ...interface{}) {
-	l.log(fmt.Sprintf(message, a), DEBUG)
+func (l *Logger) Debug(message string, a ...interface{}) {
+	l.log(fmt.Sprintf(message, a...), DEBUG)
 }
 
-func (l Logger) Trace(message string, a ...interface{}) {
-	l.log(fmt.Sprintf(message, a), TRACE)
+func (l *Logger) Trace(message string, a ...interface{}) {
+	l.log(fmt.Sprintf(message, a...), TRACE)
 }
 
-func (l Logger) SetLogWriter(writer LogWriter) Logger {
+func (l *Logger) SetLogWriter(writer LogWriter) *Logger {
 	l.writers = []LogWriter{writer}
 	return l
 }
 
-func (l Logger) AddLogWriter(writer LogWriter) Logger {
+func (l *Logger) AddLogWriter(writer LogWriter) *Logger {
 	l.writers = append(l.writers, writer)
 	return l
 }
 
-func (l Logger) SetDefaultLogLevel() Logger {
+func (l *Logger) SetDefaultLogLevel() *Logger {
 	l.writers = []LogWriter{{
 		Writer: os.Stdout,
 		Levels: []LogLevel{
@@ -77,7 +77,7 @@ func (l Logger) SetDefaultLogLevel() Logger {
 	return l
 }
 
-func (l Logger) SetDebugLogLevel() Logger {
+func (l *Logger) SetDebugLogLevel() *Logger {
 	l.writers = []LogWriter{{
 		Writer: os.Stdout,
 		Levels: []LogLevel{
@@ -93,7 +93,7 @@ func (l Logger) SetDebugLogLevel() Logger {
 	return l
 }
 
-func (l Logger) SetTraceLogLevel() Logger {
+func (l *Logger) SetTraceLogLevel() *Logger {
 	l.writers = []LogWriter{{
 		Writer: os.Stdout,
 		Levels: []LogLevel{
@@ -106,6 +106,6 @@ func (l Logger) SetTraceLogLevel() Logger {
 		Levels: []LogLevel{
 			ERROR,
 		},
-	},}
+	}}
 	return l
 }
