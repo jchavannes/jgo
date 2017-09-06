@@ -3,6 +3,7 @@ package jlog
 import (
 	"fmt"
 	"github.com/jchavannes/jgo/jerr"
+	"io"
 	"os"
 	"time"
 )
@@ -108,4 +109,13 @@ func (l *Logger) SetTraceLogLevel() *Logger {
 		},
 	}}
 	return l
+}
+
+func GetLogger(writer io.Writer, levels []LogLevel) *Logger {
+	var logger Logger
+	logger.SetLogWriter(LogWriter{
+		Writer: writer,
+		Levels: levels,
+	})
+	return &logger
 }
