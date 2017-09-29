@@ -94,9 +94,6 @@ func (r *Response) WriteJson(i interface{}, pretty bool) {
 func (r *Response) Render() error {
 	requestURI := r.Request.GetURI()
 	templateName := requestURI[1:]
-	if templateName == "" {
-		templateName = "index"
-	}
 	return r.RenderTemplate(templateName)
 }
 
@@ -109,8 +106,16 @@ func (r *Response) RenderTemplate(templateName string) error {
 
 	r.SetHeader("Content-Type", "text/html")
 
+	var indexTemplate string
+	if templateName == "" {
+		indexTemplate = "index.html"
+	} else {
+		indexTemplate = templateName + "/index.html"
+	}
+
 	err = renderer.Render([]string{
 		templateName + ".html",
+		indexTemplate,
 		"404.html",
 	}, r.Writer, r.Helper)
 
