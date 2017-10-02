@@ -3,21 +3,20 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
+	"github.com/jchavannes/jgo/chat"
 	"github.com/jchavannes/jgo/example/db"
 	"github.com/jchavannes/jgo/web"
-	"github.com/jchavannes/jgo/chat"
 	"golang.org/x/net/html"
 	"net/http"
 	"time"
 )
 
 const (
-	WS_CTS_SendHeartBeat = "SendHeartBeat"
-	WS_CTS_SendMessage = "SendMessage"
+	WS_CTS_SendHeartBeat  = "SendHeartBeat"
+	WS_CTS_SendMessage    = "SendMessage"
 	WS_STC_ReceiveMessage = "ReceiveMessage"
-	WS_STC_UserEnter = "UserEnter"
-	WS_STC_UserExit = "UserExit"
+	WS_STC_UserEnter      = "UserEnter"
+	WS_STC_UserExit       = "UserExit"
 )
 
 var (
@@ -36,7 +35,7 @@ var (
 	}
 
 	signupSubmitRoute = web.Route{
-		Pattern: "/signup-submit",
+		Pattern:     "/signup-submit",
 		CsrfProtect: true,
 		Handler: func(r *web.Response) {
 			username := r.Request.GetFormValue("username")
@@ -65,7 +64,7 @@ var (
 	}
 
 	loginSubmitRoute = web.Route{
-		Pattern: "/login-submit",
+		Pattern:     "/login-submit",
 		CsrfProtect: true,
 		Handler: func(r *web.Response) {
 			username := r.Request.GetFormValue("username")
@@ -171,11 +170,11 @@ type WS_SendMessage struct {
 
 func main() {
 	server := web.Server{
-		Port: 8248,
-		UseSessions: true,
-		TemplatesDir: "templates",
+		Port:           8248,
+		UseSessions:    true,
+		TemplatesDir:   "templates",
 		StaticFilesDir: "pub",
-		PreHandler: preHandler,
+		PreHandler:     preHandler,
 		Routes: []web.Route{
 			defaultRoute,
 			signupRoute,
@@ -191,9 +190,9 @@ func main() {
 	server.Run()
 }
 
-func createChatConnection(chatroomName string, user *db.User, ws *websocket.Conn) {
+func createChatConnection(chatroomName string, user *db.User, ws *web.Socket) {
 	subscription := chat.Subscribe(chatroomName, &chat.User{
-		Id: user.Id,
+		Id:       user.Id,
 		Username: user.Username,
 	})
 	defer subscription.Unsubscribe()
@@ -201,7 +200,7 @@ func createChatConnection(chatroomName string, user *db.User, ws *websocket.Conn
 
 	go func() {
 		for {
-			_, msg, err := ws.ReadMessage()
+			msg, err := ws.ReadMessage()
 			if err != nil {
 				break
 			}
@@ -217,20 +216,20 @@ func createChatConnection(chatroomName string, user *db.User, ws *websocket.Conn
 				err = json.Unmarshal([]byte(wsMessage.Data), &wsSendMessage)
 				if err == nil {
 					message := db.Message{
-						Date: time.Now().Unix(),
-						Message: html.EscapeString(wsSendMessage.Message),
+						Date:     time.Now().Unix(),
+						Message:  html.EscapeString(wsSendMessage.Message),
 						Chatroom: chatroomName,
-						User: *user,
-						UserId: user.Id,
+						User:     *user,
+						UserId:   user.Id,
 					}
 					fmt.Printf("Message: %#v\n", message)
 					message.Save()
 					subscription.SendMessage(&chat.Message{
-						Id: message.Id,
-						Date: message.Date,
+						Id:      message.Id,
+						Date:    message.Date,
 						Message: message.Message,
 						User: &chat.User{
-							Id: message.User.Id,
+							Id:       message.User.Id,
 							Username: message.User.Username,
 						},
 					})
@@ -256,7 +255,7 @@ func createChatConnection(chatroomName string, user *db.User, ws *websocket.Conn
 	}
 }
 
-func sendDataToWebSocket(ws *websocket.Conn, value interface{}, messageType string) {
+func sendDataToWebSocket(ws *web.Socket, value interface{}, messageType string) {
 	data, err := json.Marshal(value)
 	if err != nil {
 		fmt.Printf("err: %#v\n", err)

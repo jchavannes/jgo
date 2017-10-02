@@ -1,15 +1,15 @@
 package web
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/gorilla/websocket"
+	"github.com/jchavannes/jgo/jerr"
+	"github.com/jchavannes/jgo/token"
 	"net/http"
 	"net/url"
 	"time"
-	"github.com/jchavannes/jgo/token"
-	"fmt"
-	"github.com/gorilla/websocket"
-	"encoding/json"
-	"errors"
-	"github.com/jchavannes/jgo/jerr"
 )
 
 // Name of cookie used for sessions.
@@ -127,13 +127,13 @@ func (r *Response) SetRedirect(location string) {
 	r.SetResponseCode(http.StatusFound)
 }
 
-func (r *Response) GetWebSocket() (*websocket.Conn, error) {
+func (r *Response) GetWebSocket() (*Socket, error) {
 	upgrader := websocket.Upgrader{}
 	conn, err := upgrader.Upgrade(r.Writer, &r.Request.HttpRequest, nil)
 	if err != nil {
 		return nil, err
 	}
-	return conn, nil
+	return &Socket{ws: conn}, nil
 }
 
 func (r *Response) Error(err error, responseCode int) {
