@@ -31,7 +31,7 @@ func (r *Renderer) Render(names []string, writer io.Writer, data interface{}) er
 			return t.ExecuteTemplate(writer, name, data)
 		}
 	}
-	return errors.New("Unable to find template.")
+	return errors.New("unable to find template")
 }
 
 func GetRenderer(directory string) (*Renderer, error) {

@@ -66,7 +66,7 @@ func (r *Response) InitSession() {
 
 func (r *Response) SetResponseCode(code int) error {
 	if r.rcSet {
-		return errors.New("Response code already set")
+		return errors.New("response code already set")
 	}
 	r.Writer.WriteHeader(code)
 	r.rcSet = true
@@ -88,6 +88,7 @@ func (r *Response) WriteJson(i interface{}, pretty bool) {
 	} else {
 		text, _ = json.Marshal(i)
 	}
+	r.SetHeader("Content-Type", "application/json")
 	r.Write(string(text))
 }
 
