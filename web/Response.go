@@ -39,11 +39,11 @@ func (r *Response) ResetOrCreateSession() {
 		CookieId: token.GetSessionToken(r.Server.SessionKey),
 	}
 	cookie := http.Cookie{
-		Name: COOKIE_NAME,
-		Value: url.QueryEscape(r.Session.CookieId),
-		Path: "/",
+		Name:     COOKIE_NAME,
+		Value:    url.QueryEscape(r.Session.CookieId),
+		Path:     "/",
 		HttpOnly: true,
-		MaxAge: int(time.Hour) * 24 * 30,
+		MaxAge:   int(time.Hour) * 24 * 30,
 	}
 	http.SetCookie(r.Writer, &cookie)
 }
@@ -129,7 +129,9 @@ func (r *Response) SetRedirect(location string) {
 }
 
 func (r *Response) GetWebSocket() (*Socket, error) {
-	upgrader := websocket.Upgrader{}
+	upgrader := websocket.Upgrader{
+		EnableCompression: true,
+	}
 	conn, err := upgrader.Upgrade(r.Writer, &r.Request.HttpRequest, nil)
 	if err != nil {
 		return nil, err
