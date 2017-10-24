@@ -44,3 +44,16 @@ func New(message string) error {
 		Messages: []string{message},
 	}
 }
+
+func Combine(errorArray []error) error {
+	var returnError JError
+	for _, err := range errorArray {
+		switch t := err.(type) {
+		case JError:
+			returnError.Messages = append(returnError.Messages, t.Messages...)
+		default:
+			returnError.Messages = append(returnError.Messages, t.Error())
+		}
+	}
+	return returnError
+}
