@@ -16,10 +16,11 @@ type Server struct {
 	Routes            []Route
 	SessionKey        string
 	StaticFilesDir    string
-	StrictSlash	  bool
+	StrictSlash       bool
 	TemplatesDir      string
 	UseAutoRender     bool
 	UseSessions       bool
+	InsecureCookie    bool
 	router            *mux.Router
 }
 
@@ -59,7 +60,7 @@ func (s *Server) addCatchAllRoute() {
 					allowedFileTypes = s.AllowedExtensions
 				}
 				for _, fileType := range allowedFileTypes {
-					if strings.HasSuffix(response.Request.HttpRequest.URL.Path, "." + fileType) || fileType == "*" {
+					if strings.HasSuffix(response.Request.HttpRequest.URL.Path, "."+fileType) || fileType == "*" {
 						http.FileServer(http.Dir(s.StaticFilesDir)).ServeHTTP(response.Writer, &response.Request.HttpRequest)
 						return
 					}
@@ -132,7 +133,7 @@ func getResponse(w http.ResponseWriter, r *http.Request, s *Server) Response {
 func (s *Server) startServer() error {
 	srv := &http.Server{
 		Handler: s.router,
-		Addr: ":" + strconv.Itoa(s.Port),
+		Addr:    ":" + strconv.Itoa(s.Port),
 	}
 	fmt.Printf("Starting server on port %d...\n", s.Port)
 	return srv.ListenAndServe()

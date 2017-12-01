@@ -43,6 +43,7 @@ func (r *Response) ResetOrCreateSession() {
 		Value:    url.QueryEscape(r.Session.CookieId),
 		Path:     "/",
 		HttpOnly: true,
+		Secure:   !r.Server.InsecureCookie,
 		MaxAge:   int(time.Hour) * 24 * 30,
 	}
 	http.SetCookie(r.Writer, &cookie)
