@@ -9,7 +9,10 @@ func GetSessionToken(signingKey string) string {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+	now := time.Now()
+	// https://pyjwt.readthedocs.io/en/latest/usage.html#registered-claim-names
+	claims["iat"] = now.Unix()
+	claims["exp"] = now.Add(time.Hour * 24 * 365).Unix()
 
 	tokenString, err := token.SignedString([]byte(signingKey))
 
