@@ -9,6 +9,7 @@ import (
 	"github.com/jchavannes/jgo/token"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -101,12 +102,15 @@ func (r *Response) Render() error {
 
 func (r *Response) RenderTemplate(templateName string) error {
 	renderer, err := GetRenderer(r.Server.TemplatesDir)
-
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	r.SetHeader("Content-Type", "text/html")
+
+	if strings.HasPrefix(templateName, "/") {
+		templateName = templateName[1:]
+	}
 
 	var indexTemplate string
 	if templateName == "" {
