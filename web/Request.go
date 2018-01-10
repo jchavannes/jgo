@@ -35,6 +35,29 @@ func (r *Request) GetFormValueInt(key string) int {
 	return i
 }
 
+func (r *Request) GetFormValueSlice(key string) []string {
+	r.HttpRequest.ParseForm()
+	value, ok := r.HttpRequest.Form[key+"[]"]
+	if !ok {
+		return []string{}
+	}
+	return value
+}
+
+func (r *Request) GetFormValueIntSlice(key string) []int {
+	r.HttpRequest.ParseForm()
+	value, ok := r.HttpRequest.Form[key+"[]"]
+	if !ok {
+		return []int{}
+	}
+	var ints []int
+	for _, item := range value {
+		i, _ := strconv.Atoi(item)
+		ints = append(ints, i)
+	}
+	return ints
+}
+
 func (r *Request) GetUrlNamedQueryVariable(key string) string {
 	vars := mux.Vars(&r.HttpRequest)
 	return vars[key]
