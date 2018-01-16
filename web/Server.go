@@ -8,6 +8,9 @@ import (
 	"strings"
 )
 
+// Name of cookie used for sessions.
+const CookieName = "session_id"
+
 type Server struct {
 	AllowedExtensions []string
 	NotFoundHandler   func(*Response)
@@ -21,6 +24,7 @@ type Server struct {
 	UseAutoRender     bool
 	UseSessions       bool
 	InsecureCookie    bool
+	CookiePrefix      string
 	router            *mux.Router
 }
 
@@ -109,6 +113,14 @@ func (s *Server) setupHandlers() {
 			}
 		})
 	}
+}
+
+func (s *Server) GetCookieName() string {
+	cookieName := CookieName
+	if s.CookiePrefix != "" {
+		cookieName = s.CookiePrefix + "_" + cookieName
+	}
+	return cookieName
 }
 
 func getResponse(w http.ResponseWriter, r *http.Request, s *Server) Response {

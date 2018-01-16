@@ -13,9 +13,6 @@ import (
 	"time"
 )
 
-// Name of cookie used for sessions.
-const COOKIE_NAME = "JGoSession"
-
 // Response objects are passed to handlers to respond to requests.
 // Includes abstracted access to request and session information
 type Response struct {
@@ -40,7 +37,7 @@ func (r *Response) ResetOrCreateSession() {
 		CookieId: token.GetSessionToken(r.Server.SessionKey),
 	}
 	cookie := http.Cookie{
-		Name:     COOKIE_NAME,
+		Name:     r.Server.GetCookieName(),
 		Value:    url.QueryEscape(r.Session.CookieId),
 		Path:     "/",
 		HttpOnly: true,
@@ -52,7 +49,7 @@ func (r *Response) ResetOrCreateSession() {
 
 // Either gets existing session token or creates a new one.
 func (r *Response) InitSession() {
-	cookie := r.Request.GetCookie(COOKIE_NAME)
+	cookie := r.Request.GetCookie(r.Server.GetCookieName())
 	var validSession bool
 	if cookie != "" {
 		validSession = token.Validate(cookie, r.Server.SessionKey)
