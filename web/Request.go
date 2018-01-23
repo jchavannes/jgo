@@ -1,10 +1,10 @@
 package web
 
 import (
-	"net/http"
 	"errors"
 	"github.com/gorilla/mux"
 	"io/ioutil"
+	"net/http"
 	"strconv"
 )
 
@@ -33,6 +33,17 @@ func (r *Request) GetFormValueInt(key string) int {
 	valString := r.HttpRequest.Form.Get(key)
 	i, _ := strconv.Atoi(valString)
 	return i
+}
+
+func (r *Request) GetFormValueUint(key string) uint {
+	return uint(r.GetFormValueInt(key))
+}
+
+func (r *Request) GetFormValueFloat(key string) float32 {
+	r.HttpRequest.ParseForm()
+	valString := r.HttpRequest.Form.Get(key)
+	i, _ := strconv.ParseFloat(valString, 32)
+	return float32(i)
 }
 
 func (r *Request) GetFormValueSlice(key string) []string {
