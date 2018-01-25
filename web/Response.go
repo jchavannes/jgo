@@ -122,6 +122,10 @@ func (r *Response) RenderTemplate(templateName string) error {
 		"404.html",
 	}, r.Writer, r.Helper)
 
+	if err != nil {
+		fmt.Printf("Error rendering template: %s\n", err)
+	}
+
 	return err
 }
 

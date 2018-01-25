@@ -1,14 +1,14 @@
 package web
 
 import (
-	"io"
-	"text/template"
 	"errors"
-	"path/filepath"
-	"strings"
+	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
-	"fmt"
+	"path/filepath"
+	"strings"
+	"text/template"
 )
 
 type Renderer struct {
@@ -16,8 +16,21 @@ type Renderer struct {
 	templateText string
 }
 
+var defaultFuncMap = template.FuncMap{
+	"loop": func(n uint) []struct{} {
+		return make([]struct{}, n)
+	},
+}
+
 func (r *Renderer) getTemplate() *template.Template {
-	return template.Must(template.New("_base").Funcs(r.funcMap).Parse(r.templateText))
+	funcMap := make(template.FuncMap)
+	for k, v := range defaultFuncMap {
+		funcMap[k] = v
+	}
+	for k, v := range r.funcMap {
+		funcMap[k] = v
+	}
+	return template.Must(template.New("_base").Funcs(funcMap).Parse(r.templateText))
 }
 
 func (r *Renderer) SetFuncMap(funcMap map[string]interface{}) {
@@ -35,7 +48,7 @@ func (r *Renderer) Render(names []string, writer io.Writer, data interface{}) er
 }
 
 func GetRenderer(directory string) (*Renderer, error) {
-	fileList := []string{}
+	var fileList []string
 	err := filepath.Walk(directory, func(path string, f os.FileInfo, err error) error {
 		fileList = append(fileList, path)
 		return nil
