@@ -93,7 +93,7 @@ func (r *Response) WriteJson(i interface{}, pretty bool) {
 
 func (r *Response) Render() error {
 	requestURI := r.Request.GetURI()
-	templateName := requestURI[1:]
+	templateName := strings.Split(requestURI[1:], "?")[0]
 	return r.RenderTemplate(templateName)
 }
 
