@@ -132,6 +132,7 @@ func getResponse(w http.ResponseWriter, r *http.Request, s *Server) Response {
 		},
 		Server: s,
 	}
+	response.Helper["URI"] = r.RequestURI
 	if s.UseSessions {
 		response.InitSession()
 		response.Helper["CsrfToken"] = response.Session.GetCsrfToken()
