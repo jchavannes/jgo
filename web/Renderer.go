@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"text/template"
 )
@@ -19,6 +21,31 @@ type Renderer struct {
 var defaultFuncMap = template.FuncMap{
 	"loop": func(n uint) []struct{} {
 		return make([]struct{}, n)
+	},
+	// Allows passing in multiple variables into a template.
+	// Pass in pairs of keys and values.
+	// Example: {{ template "index.html" dict "MyVar" .SomeVar "MySecondVar" .SomeOtherVar }}
+	"dict": func(values ...interface{}) (map[string]interface{}, error) {
+		if len(values)%2 != 0 {
+			return nil, errors.New("invalid dict call")
+		}
+		dict := make(map[string]interface{}, len(values)/2)
+		for i := 0; i < len(values); i += 2 {
+			key, ok := values[i].(string)
+			if !ok {
+				return nil, errors.New("dict keys must be strings")
+			}
+			dict[key] = values[i+1]
+		}
+		return dict, nil
+	},
+	"formatFloat": func(f float32) string {
+		str := strconv.FormatFloat(float64(f), 'f', 2, 32)
+		re := regexp.MustCompile("(\\d+)(\\d{3})")
+		for i := 0; i < (len(str)-1)/3; i++ {
+			str = re.ReplaceAllString(str, "$1,$2")
+		}
+		return str
 	},
 }
 
