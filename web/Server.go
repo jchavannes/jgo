@@ -13,6 +13,7 @@ const CookieName = "session_id"
 
 type Server struct {
 	AllowedExtensions []string
+	IsLoggedIn        func(*Response) bool
 	NotFoundHandler   func(*Response)
 	Port              int
 	PreHandler        func(*Response)
@@ -74,7 +75,7 @@ func (s *Server) addCatchAllRoute() {
 			if len(s.TemplatesDir) > 0 && s.UseAutoRender {
 				templateName := response.Request.GetPotentialFilename()
 
-				if len(templateName) == 0 {
+				if templateName == "" {
 					templateName = "index"
 				}
 
@@ -108,9 +109,12 @@ func (s *Server) setupHandlers() {
 			defer response.LogComplete()
 			if route.CsrfProtect && ! response.IsValidCsrf() {
 				response.SetResponseCode(http.StatusForbidden)
-			} else {
-				route.Handler(&response)
+				return
 			}
+			if s.IsLoggedIn != nil && route.NeedsLogin && ! s.IsLoggedIn(&response) {
+				return
+			}
+			route.Handler(&response)
 		})
 	}
 }

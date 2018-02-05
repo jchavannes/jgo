@@ -5,4 +5,5 @@ type Route struct {
 	Name        string // Optional
 	Handler     func(*Response)
 	CsrfProtect bool
+	NeedsLogin  bool
 }
