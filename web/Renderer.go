@@ -47,6 +47,18 @@ var defaultFuncMap = template.FuncMap{
 		}
 		return str
 	},
+	"formatBigFloat": func(f float64) string {
+		str := strconv.FormatFloat(f, 'f', 8, 64)
+		return str
+	},
+	"formatBigInt": func(f int64) string {
+		str := strconv.Itoa(int(f))
+		re := regexp.MustCompile("(\\d+)(\\d{3})")
+		for i := 0; i < (len(str)-1)/3; i++ {
+			str = re.ReplaceAllString(str, "$1,$2")
+		}
+		return str
+	},
 }
 
 func (r *Renderer) getTemplate() *template.Template {
