@@ -22,7 +22,11 @@ func (e JError) Error() string {
 	return BOLD_START + COLOR_RED + "Error:" + COLOR_DEFAULT + FORMAT_END + returnString
 }
 
-func Get(message string, err error) error {
+func (e JError) Print() {
+	fmt.Println(e.Error())
+}
+
+func Get(message string, err error) JError {
 	var returnError JError
 	switch t := err.(type) {
 	case JError:
@@ -39,10 +43,18 @@ func Get(message string, err error) error {
 	return returnError
 }
 
-func New(message string) error {
+func Getf(err error, format string, a ...interface{}) JError {
+	return Get(fmt.Sprintf(format, a...), err)
+}
+
+func New(message string) JError {
 	return JError{
 		Messages: []string{message},
 	}
+}
+
+func Newf(format string, a ...interface{}) JError {
+	return New(fmt.Sprintf(format, a...))
 }
 
 func Combine(errorArray []error) error {
