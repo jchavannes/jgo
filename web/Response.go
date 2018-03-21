@@ -151,5 +151,9 @@ func (r *Response) Error(err error, responseCode int) {
 }
 
 func (r *Response) LogComplete() {
-	fmt.Printf("[%s] Handled request: %#v\n", time.Now().Format(time.RFC3339), r.Request.HttpRequest.URL.Path)
+	fmt.Printf("[%s - %s] Handled request: %#v\n",
+		time.Now().Format(time.RFC3339),
+		r.Request.GetSourceIP(),
+		r.Request.HttpRequest.URL.Path,
+	)
 }

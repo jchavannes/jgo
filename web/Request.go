@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gorilla/mux"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"strconv"
 )
@@ -111,4 +112,17 @@ func (r *Request) GetBody() []byte {
 
 func (r *Request) GetPotentialFilename() string {
 	return r.HttpRequest.RequestURI[1:len(r.HttpRequest.RequestURI)]
+}
+
+func (r *Request) GetSourceIP() string {
+	cfIp := r.GetHeader("CF-Connecting-IP")
+	if cfIp != "" {
+		return cfIp
+	}
+	forwarded := r.GetHeader("X-Forwarded-For")
+	if forwarded != "" {
+		return forwarded
+	}
+	host, _, _ := net.SplitHostPort(r.HttpRequest.RemoteAddr)
+	return host
 }
