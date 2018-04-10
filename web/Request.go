@@ -76,8 +76,7 @@ func (r *Request) GetUrlNamedQueryVariable(key string) string {
 }
 
 func (r *Request) GetUrlNamedQueryVariableInt(key string) int {
-	vars := mux.Vars(&r.HttpRequest)
-	i, _ := strconv.Atoi(vars[key])
+	i, _ := strconv.Atoi(r.GetUrlNamedQueryVariable(key))
 	return i
 }
 
@@ -87,6 +86,15 @@ func (r *Request) GetUrlNamedQueryVariableUInt(key string) uint {
 
 func (r *Request) GetUrlParameter(key string) string {
 	return r.HttpRequest.URL.Query().Get(key)
+}
+
+func (r *Request) GetUrlParameterInt(key string) int {
+	i, _ := strconv.Atoi(r.GetUrlParameter(key))
+	return i
+}
+
+func (r *Request) GetUrlParameterUInt(key string) uint {
+	return uint(r.GetUrlParameterInt(key))
 }
 
 func (r *Request) GetHeader(key string) string {

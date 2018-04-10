@@ -7,3 +7,11 @@ type Route struct {
 	CsrfProtect bool
 	NeedsLogin  bool
 }
+
+func Routes(routeSets ...[]Route) []Route {
+	var allRoutes []Route
+	for _, routeSet := range routeSets {
+		allRoutes = append(allRoutes, routeSet...)
+	}
+	return allRoutes
+}
