@@ -107,6 +107,7 @@ func GetRenderer(directory string) (*Renderer, error) {
 			fmt.Println(err)
 		}
 
+		file = strings.Replace(file, "\\", "/", -1)
 		templateName := strings.TrimPrefix(strings.TrimPrefix(file, directory), "/")
 		templateText += "{{ define \"" + templateName + "\" }}" + string(contents) + "{{ end }}\n"
 	}
