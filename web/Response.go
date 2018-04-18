@@ -1,6 +1,7 @@
 package web
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -49,7 +50,8 @@ func (r *Response) ResetOrCreateSession() {
 // Either gets existing session token or creates a new one.
 func (r *Response) InitSession() {
 	cookie := r.Request.GetCookie(r.Server.GetCookieName())
-	if cookie != "" {
+	cookieByte, err := hex.DecodeString(cookie)
+	if err == nil && cookie != "" && len(cookieByte) == 32 {
 		r.Session = Session{
 			CookieId: cookie,
 		}

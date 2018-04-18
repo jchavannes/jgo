@@ -2,7 +2,7 @@ package web
 
 import (
 	"crypto/rand"
-	"encoding/base64"
+	"encoding/hex"
 	"io"
 )
 
@@ -27,5 +27,5 @@ func CreateToken() string {
 	if _, err := io.ReadFull(rand.Reader, b); err != nil {
 		return ""
 	}
-	return base64.URLEncoding.EncodeToString(b)
+	return hex.EncodeToString(b)
 }
