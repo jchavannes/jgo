@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/jchavannes/jgo/jerr"
-	"github.com/jchavannes/jgo/token"
 	"net/http"
 	"net/url"
 	"strings"
@@ -34,7 +33,7 @@ func (r *Response) IsValidCsrf() bool {
 // Sets a new session cookie.
 func (r *Response) ResetOrCreateSession() {
 	r.Session = Session{
-		CookieId: token.GetSessionToken(r.Server.SessionKey),
+		CookieId: CreateToken(),
 	}
 	cookie := http.Cookie{
 		Name:     r.Server.GetCookieName(),
@@ -50,11 +49,7 @@ func (r *Response) ResetOrCreateSession() {
 // Either gets existing session token or creates a new one.
 func (r *Response) InitSession() {
 	cookie := r.Request.GetCookie(r.Server.GetCookieName())
-	var validSession bool
 	if cookie != "" {
-		validSession = token.Validate(cookie, r.Server.SessionKey)
-	}
-	if validSession {
 		r.Session = Session{
 			CookieId: cookie,
 		}
