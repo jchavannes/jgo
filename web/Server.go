@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -66,6 +67,12 @@ func (s *Server) addCatchAllRoute() {
 				}
 				for _, fileType := range allowedFileTypes {
 					if strings.HasSuffix(response.Request.HttpRequest.URL.Path, "."+fileType) || fileType == "*" {
+						if fileType == "css" {
+							var re = regexp.MustCompile(`(.*)-[\d]+(\.css)`)
+							path := re.ReplaceAllString(response.Request.HttpRequest.URL.Path, `$1$2`)
+							http.ServeFile(w, r, s.StaticFilesDir + path)
+							return
+						}
 						http.FileServer(http.Dir(s.StaticFilesDir)).ServeHTTP(response.Writer, &response.Request.HttpRequest)
 						return
 					}
