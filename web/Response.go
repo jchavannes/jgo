@@ -28,7 +28,14 @@ type Response struct {
 // Tokens are kept in memory and do not persist between instances or restarts.
 func (r *Response) IsValidCsrf() bool {
 	requestCsrfToken, err := r.Request.GetCsrfToken()
-	return err == nil && requestCsrfToken == r.Session.GetCsrfToken()
+	return err == nil && requestCsrfToken == r.GetCsrfToken()
+}
+
+func (r *Response) GetCsrfToken() string {
+	if r.Server.GetCsrfToken != nil {
+		return r.Server.GetCsrfToken(r.Session.CookieId)
+	}
+	return r.Session.GetCsrfToken()
 }
 
 // Sets a new session cookie.

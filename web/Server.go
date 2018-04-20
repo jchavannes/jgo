@@ -18,6 +18,7 @@ type Server struct {
 	NotFoundHandler   func(*Response)
 	Port              int
 	PreHandler        func(*Response)
+	GetCsrfToken      func(string) string
 	Routes            []Route
 	SessionKey        string
 	StaticFilesDir    string
@@ -70,7 +71,7 @@ func (s *Server) addCatchAllRoute() {
 						if fileType == "css" {
 							var re = regexp.MustCompile(`(.*)-[\d]+(\.css)`)
 							path := re.ReplaceAllString(response.Request.HttpRequest.URL.Path, `$1$2`)
-							http.ServeFile(w, r, s.StaticFilesDir + path)
+							http.ServeFile(w, r, s.StaticFilesDir+path)
 							return
 						}
 						http.FileServer(http.Dir(s.StaticFilesDir)).ServeHTTP(response.Writer, &response.Request.HttpRequest)
@@ -146,7 +147,7 @@ func getResponse(w http.ResponseWriter, r *http.Request, s *Server) Response {
 	response.Helper["URI"] = r.RequestURI
 	if s.UseSessions {
 		response.InitSession()
-		response.Helper["CsrfToken"] = response.Session.GetCsrfToken()
+		response.Helper["CsrfToken"] = response.GetCsrfToken()
 	}
 	if s.PreHandler != nil {
 		s.PreHandler(&response)
