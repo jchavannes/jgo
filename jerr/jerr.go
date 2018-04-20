@@ -69,3 +69,19 @@ func Combine(errorArray ...error) error {
 	}
 	return returnError
 }
+
+func HasError(e error, s string) bool {
+	if e == nil {
+		return false
+	}
+	err, ok := e.(JError)
+	if !ok {
+		return e.Error() == s
+	}
+	for _, errMessage := range err.Messages {
+		if errMessage == s {
+			return true
+		}
+	}
+	return false
+}
