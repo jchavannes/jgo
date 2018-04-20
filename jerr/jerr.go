@@ -4,6 +4,7 @@ import "fmt"
 
 type JError struct {
 	Messages []string
+	DisplayMessage string
 }
 
 const (
@@ -24,6 +25,15 @@ func (e JError) Error() string {
 
 func (e JError) Print() {
 	fmt.Println(e.Error())
+}
+
+// Message to be presented to the user.
+func (e *JError) SetDisplayMessage(message string) {
+	e.DisplayMessage = message
+}
+
+func (e JError) GetDisplayMessage() string {
+	return e.DisplayMessage
 }
 
 func Get(message string, err error) JError {
