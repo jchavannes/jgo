@@ -33,9 +33,13 @@ func (r *Response) IsValidCsrf() bool {
 
 // Sets a new session cookie.
 func (r *Response) ResetOrCreateSession() {
+
+	currentCsrfToken := r.Session.GetCsrfToken()
 	r.Session = Session{
 		CookieId: CreateToken(),
 	}
+	r.Session.SetCsrfToken(currentCsrfToken)
+
 	cookie := http.Cookie{
 		Name:     r.Server.GetCookieName(),
 		Value:    url.QueryEscape(r.Session.CookieId),

@@ -17,9 +17,13 @@ func (s *Session) GetCsrfToken() string {
 		csrfTokens = make(map[string]string)
 	}
 	if _, ok := csrfTokens[s.CookieId]; !ok {
-		csrfTokens[s.CookieId] = CreateToken()
+		s.SetCsrfToken(CreateToken())
 	}
 	return csrfTokens[s.CookieId]
+}
+
+func (s *Session) SetCsrfToken(csrfToken string) {
+	csrfTokens[s.CookieId] = csrfToken
 }
 
 func CreateToken() string {
