@@ -28,7 +28,7 @@ type Response struct {
 // Tokens are kept in memory and do not persist between instances or restarts.
 func (r *Response) IsValidCsrf() bool {
 	requestCsrfToken, err := r.Request.GetCsrfToken()
-	return err == nil && requestCsrfToken == r.GetCsrfToken()
+	return err == nil && requestCsrfToken != "" && requestCsrfToken == r.GetCsrfToken()
 }
 
 func (r *Response) GetCsrfToken() string {
