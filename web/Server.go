@@ -73,6 +73,11 @@ func (s *Server) addCatchAllRoute() {
 							path := re.ReplaceAllString(response.Request.HttpRequest.URL.Path, `$1$2`)
 							http.ServeFile(w, r, s.StaticFilesDir+path)
 							return
+						} else if fileType == "js" {
+							var re = regexp.MustCompile(`(.*)-[\d]+(\.js)`)
+							path := re.ReplaceAllString(response.Request.HttpRequest.URL.Path, `$1$2`)
+							http.ServeFile(w, r, s.StaticFilesDir+path)
+							return
 						}
 						http.FileServer(http.Dir(s.StaticFilesDir)).ServeHTTP(response.Writer, &response.Request.HttpRequest)
 						return
