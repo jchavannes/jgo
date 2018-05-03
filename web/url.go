@@ -10,6 +10,7 @@ type UrlParamType string
 const (
 	UrlParamInteger UrlParamType = "integer"
 	UrlParamString  UrlParamType = "string"
+	UrlParamAny     UrlParamType = "any"
 )
 
 type UrlParam struct {
@@ -23,6 +24,8 @@ func (u UrlParam) UrlPart() string {
 		return "{" + u.Id + ":[0-9]+}"
 	case UrlParamString:
 		return "{" + u.Id + ":[A-Za-z0-9]+}"
+	case UrlParamAny:
+		return "{" + u.Id + ":.*}"
 	}
 	fmt.Println(jerr.New("unknown url param type").Error())
 	return ""
