@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"strings"
 	"time"
+	"github.com/nicksnyder/go-i18n/i18n"
 )
 
 // Response objects are passed to handlers to respond to requests.
@@ -106,6 +107,16 @@ func (r *Response) RenderTemplate(templateName string) error {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	// Maybe load these conditionally?
+	i18n.MustLoadTranslationFile("en-US.all.json")
+	i18n.MustLoadTranslationFile("zh-CN.all.json")
+	i18n.MustLoadTranslationFile("es-LA.all.json")
+	i18n.MustLoadTranslationFile("ja-JP.all.json")
+	T := i18n.MustTfunc(r.Request.GetCookie("memo_language"), r.Request.GetHeader("Accept-Language"))
+	renderer.SetFuncMap(map[string]interface{}{
+		"T": T,
+	})
 
 	r.SetHeader("Content-Type", "text/html")
 
