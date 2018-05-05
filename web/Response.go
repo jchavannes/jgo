@@ -108,11 +108,13 @@ func (r *Response) RenderTemplate(templateName string) error {
 		fmt.Println(err)
 	}
 
-	// Maybe load these conditionally?
+	// These should be loaded conditionally. At this point we know the chosen language.
 	i18n.MustLoadTranslationFile("en-US.all.json")
 	i18n.MustLoadTranslationFile("zh-CN.all.json")
 	i18n.MustLoadTranslationFile("es-LA.all.json")
 	i18n.MustLoadTranslationFile("ja-JP.all.json")
+
+	// Untested - this should prioritize the cookie and fall back to browser's Accept-Language header. Defaults to EN.
 	T := i18n.MustTfunc(r.Request.GetCookie("memo_language"), r.Request.GetHeader("Accept-Language"))
 	renderer.SetFuncMap(map[string]interface{}{
 		"T": T,
