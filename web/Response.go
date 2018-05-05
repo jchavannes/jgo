@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/jchavannes/jgo/jerr"
+	"html/template"
 	"net/http"
 	"net/url"
 	"strings"
@@ -17,11 +18,16 @@ import (
 // Includes abstracted access to request and session information
 type Response struct {
 	Helper  map[string]interface{}
+	funcMap map[string]interface{}
 	Request Request
 	Server  *Server
 	Session Session
 	rcSet   bool
 	Writer  http.ResponseWriter
+}
+
+func (r *Response) SetFuncMap(funcMap map[string]interface{}) {
+	r.funcMap = template.FuncMap(funcMap)
 }
 
 // Checks that CSRF token in request matches one for session.
@@ -105,6 +111,10 @@ func (r *Response) RenderTemplate(templateName string) error {
 	renderer, err := GetRenderer(r.Server.TemplatesDir)
 	if err != nil {
 		fmt.Println(err)
+	}
+
+	if r.funcMap != nil {
+		renderer.SetFuncMap(r.funcMap)
 	}
 
 	r.SetHeader("Content-Type", "text/html")
