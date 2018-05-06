@@ -1,4 +1,4 @@
-JGo
+MIT License
 
 https://github.com/jchavannes/jgo
 
