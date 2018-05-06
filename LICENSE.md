@@ -1,7 +1,5 @@
 MIT License
 
-https://github.com/jchavannes/jgo
-
 Copyright (c) 2017 Jason Chavannes <jason.chavannes@gmail.com>
 
 Permission is hereby granted, free of charge, to any person
