@@ -73,6 +73,10 @@ func (r *Response) InitSession() {
 	}
 }
 
+func (r *Response) ResponseCodeSet() bool {
+	return r.rcSet
+}
+
 func (r *Response) SetResponseCode(code int) error {
 	if r.rcSet {
 		return errors.New("response code already set")

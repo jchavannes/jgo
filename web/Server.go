@@ -60,7 +60,9 @@ func (s *Server) addCatchAllRoute() {
 		Handler: func(w http.ResponseWriter, r *http.Request) {
 			response := getResponse(w, r, s)
 			defer response.LogComplete()
-
+			if response.ResponseCodeSet() {
+				return
+			}
 			if len(s.StaticFilesDir) > 0 {
 				allowedFileTypes := GetDefaultAllowedFileExtensions()
 				if len(s.AllowedExtensions) > 0 {
@@ -120,6 +122,9 @@ func (s *Server) setupHandlers() {
 		s.router.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
 			response := getResponse(w, r, s)
 			defer response.LogComplete()
+			if response.ResponseCodeSet() {
+				return
+			}
 			if route.CsrfProtect && ! response.IsValidCsrf() {
 				response.SetResponseCode(http.StatusForbidden)
 				return
