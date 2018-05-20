@@ -1,6 +1,9 @@
 package jerr
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type JError struct {
 	Messages []string
@@ -80,6 +83,22 @@ func HasError(e error, s string) bool {
 	}
 	for _, errMessage := range err.Messages {
 		if errMessage == s {
+			return true
+		}
+	}
+	return false
+}
+
+func HasErrorPart(e error, s string) bool {
+	if e == nil {
+		return false
+	}
+	err, ok := e.(JError)
+	if !ok {
+		return strings.Contains(e.Error(), s)
+	}
+	for _, errMessage := range err.Messages {
+		if strings.Contains(errMessage, s) {
 			return true
 		}
 	}

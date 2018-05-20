@@ -59,6 +59,22 @@ var defaultFuncMap = template.FuncMap{
 		}
 		return str
 	},
+	"formatUInt": func(f uint) string {
+		str := strconv.Itoa(int(f))
+		re := regexp.MustCompile("(\\d+)(\\d{3})")
+		for i := 0; i < (len(str)-1)/3; i++ {
+			str = re.ReplaceAllString(str, "$1,$2")
+		}
+		return str
+	},
+	"formatInt": func(f int) string {
+		str := strconv.Itoa(f)
+		re := regexp.MustCompile("(\\d+)(\\d{3})")
+		for i := 0; i < (len(str)-1)/3; i++ {
+			str = re.ReplaceAllString(str, "$1,$2")
+		}
+		return str
+	},
 }
 
 func (r *Renderer) getTemplate() *template.Template {
