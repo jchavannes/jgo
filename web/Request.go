@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type Request struct {
@@ -27,6 +28,18 @@ func (r *Request) GetCsrfToken() (string, error) {
 func (r *Request) GetFormValue(key string) string {
 	r.HttpRequest.ParseForm()
 	return r.HttpRequest.Form.Get(key)
+}
+
+func (r *Request) GetFormValueBool(key string) bool {
+	r.HttpRequest.ParseForm()
+	valString := strings.ToLower(r.HttpRequest.Form.Get(key))
+	if valString == "true" {
+		return true
+	} else if valString == "false" {
+		return false
+	}
+	i, _ := strconv.Atoi(valString)
+	return i == 1
 }
 
 func (r *Request) GetFormValueInt(key string) int {
