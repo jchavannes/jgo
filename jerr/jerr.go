@@ -10,23 +10,35 @@ type JError struct {
 }
 
 const (
-	ITALIC_START = "\x1b[3m"
-	BOLD_START = "\x1b[1m"
-	FORMAT_END = "\x1b[0m"
-	COLOR_DEFAULT = "\x1b[39m"
-	COLOR_RED = "\x1b[31m"
+	boldStart    = "\x1b[1m"
+	formatEnd    = "\x1b[0m"
+	colorDefault = "\x1b[39m"
+	colorRed     = "\x1b[31m"
+	colorYellow  = "\x1b[33m"
 )
 
 func (e JError) Error() string {
-	returnString := ""
-	for i := len(e.Messages) - 1; i >= 0; i-- {
-		returnString += "\n " + BOLD_START + "[" + fmt.Sprintf("%d", len(e.Messages) - i) + "]" + FORMAT_END + " " + e.Messages[i]
-	}
-	return BOLD_START + COLOR_RED + "Error:" + COLOR_DEFAULT + FORMAT_END + returnString
+	return e.getText(false)
 }
 
 func (e JError) Print() {
-	fmt.Println(e.Error())
+	fmt.Println(e.getText(false))
+}
+
+func (e JError) Warn() {
+	fmt.Println(e.getText(true))
+}
+
+func (e JError) getText(warn bool) string {
+	returnString := ""
+	for i := len(e.Messages) - 1; i >= 0; i-- {
+		returnString += "\n " + boldStart + "[" + fmt.Sprintf("%d", len(e.Messages)-i) + "]" + formatEnd + " " + e.Messages[i]
+	}
+	if warn {
+		return boldStart + colorYellow + "Warning:" + colorDefault + formatEnd + returnString
+	} else {
+		return boldStart + colorRed + "Error:" + colorDefault + formatEnd + returnString
+	}
 }
 
 func Get(message string, err error) JError {
