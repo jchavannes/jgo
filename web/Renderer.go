@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -74,6 +75,14 @@ var defaultFuncMap = template.FuncMap{
 			str = re.ReplaceAllString(str, "$1,$2")
 		}
 		return str
+	},
+	"getUnique": func(n int) string {
+		const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		b := make([]byte, n)
+		for i := range b {
+			b[i] = letterBytes[rand.Intn(len(letterBytes))]
+		}
+		return string(b)
 	},
 }
 
