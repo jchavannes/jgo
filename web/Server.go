@@ -18,6 +18,7 @@ type Server struct {
 	NotFoundHandler   func(*Response)
 	Port              int
 	PreHandler        func(*Response)
+	PostHandler       func(*Response)
 	GetCsrfToken      func(string) string
 	Routes            []Route
 	SessionKey        string
@@ -105,6 +106,9 @@ func (s *Server) addCatchAllRoute() {
 			} else {
 				response.SetResponseCode(http.StatusNotFound)
 			}
+			if s.PostHandler != nil {
+				s.PostHandler(&response)
+			}
 		},
 	})
 }
@@ -133,6 +137,9 @@ func (s *Server) setupHandlers() {
 				return
 			}
 			route.Handler(&response)
+			if s.PostHandler != nil {
+				s.PostHandler(&response)
+			}
 		})
 	}
 }

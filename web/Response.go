@@ -22,7 +22,7 @@ type Response struct {
 	Request Request
 	Server  *Server
 	Session Session
-	rcSet   bool
+	code    int
 	Writer  http.ResponseWriter
 }
 
@@ -74,15 +74,19 @@ func (r *Response) InitSession() {
 }
 
 func (r *Response) ResponseCodeSet() bool {
-	return r.rcSet
+	return r.code != 0
+}
+
+func (r *Response) GetResponseCode() int {
+	return r.code
 }
 
 func (r *Response) SetResponseCode(code int) error {
-	if r.rcSet {
+	if r.ResponseCodeSet() {
 		return errors.New("response code already set")
 	}
 	r.Writer.WriteHeader(code)
-	r.rcSet = true
+	r.code = code
 	return nil
 }
 
