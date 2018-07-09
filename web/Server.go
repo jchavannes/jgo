@@ -116,13 +116,18 @@ func (s *Server) addCatchAllRoute() {
 func (s *Server) setupHandlers() {
 	s.router = mux.NewRouter()
 	s.router.StrictSlash(s.StrictSlash)
+	if len(s.Routes) > 10 {
+		fmt.Printf("Adding %d patterns to router.\n", len(s.Routes))
+	}
 	for _, routeTemp := range s.Routes {
 		route := routeTemp
 		name := ""
 		if len(route.Name) > 0 {
 			name = " (" + route.Name + ")"
 		}
-		fmt.Printf("Adding pattern to router: %s%s\n", route.Pattern, name)
+		if len(s.Routes) <= 10 {
+			fmt.Printf("Adding pattern to router: %s%s\n", route.Pattern, name)
+		}
 		s.router.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
 			response := getResponse(w, r, s)
 			defer response.LogComplete()
