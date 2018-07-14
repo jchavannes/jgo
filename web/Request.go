@@ -32,13 +32,16 @@ func (r *Request) GetFormValue(key string) string {
 
 func (r *Request) GetFormValueBool(key string) bool {
 	r.HttpRequest.ParseForm()
-	valString := strings.ToLower(r.HttpRequest.Form.Get(key))
-	if valString == "true" {
+	return getBoolFromString(strings.ToLower(r.HttpRequest.Form.Get(key)))
+}
+
+func getBoolFromString(val string) bool {
+	if val == "true" {
 		return true
-	} else if valString == "false" {
+	} else if val == "false" {
 		return false
 	}
-	i, _ := strconv.Atoi(valString)
+	i, _ := strconv.Atoi(val)
 	return i == 1
 }
 
@@ -104,6 +107,10 @@ func (r *Request) GetUrlParameter(key string) string {
 func (r *Request) GetUrlParameterInt(key string) int {
 	i, _ := strconv.Atoi(r.GetUrlParameter(key))
 	return i
+}
+
+func (r *Request) GetUrlParameterBool(key string) bool {
+	return getBoolFromString(strings.ToLower(r.GetUrlParameter(key)))
 }
 
 func (r *Request) GetUrlParameterUInt(key string) uint {
