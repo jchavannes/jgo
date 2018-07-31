@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Name of cookie used for sessions.
@@ -130,6 +131,7 @@ func (s *Server) setupHandlers() {
 		}
 		s.router.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
 			response := getResponse(w, r, s)
+			response.Pattern = route.Pattern
 			defer response.LogComplete()
 			if response.ResponseCodeSet() {
 				return
@@ -159,12 +161,11 @@ func (s *Server) GetCookieName() string {
 
 func getResponse(w http.ResponseWriter, r *http.Request, s *Server) Response {
 	response := Response{
-		Helper: make(map[string]interface{}),
-		Writer: w,
-		Request: Request{
-			HttpRequest: *r,
-		},
-		Server: s,
+		Helper:  make(map[string]interface{}),
+		Request: Request{HttpRequest: *r},
+		Server:  s,
+		StartTs: time.Now(),
+		Writer:  w,
 	}
 	response.Helper["URI"] = r.RequestURI
 	if s.UseSessions {

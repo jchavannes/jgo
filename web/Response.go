@@ -19,6 +19,8 @@ import (
 type Response struct {
 	Helper  map[string]interface{}
 	funcMap map[string]interface{}
+	StartTs time.Time
+	Pattern string
 	Request Request
 	Server  *Server
 	Session Session
@@ -78,7 +80,11 @@ func (r *Response) ResponseCodeSet() bool {
 }
 
 func (r *Response) GetResponseCode() int {
-	return r.code
+	responseCode := r.code
+	if responseCode == 0 {
+		responseCode = http.StatusOK
+	}
+	return responseCode
 }
 
 func (r *Response) SetResponseCode(code int) error {
@@ -173,9 +179,10 @@ func (r *Response) Error(err error, responseCode int) {
 }
 
 func (r *Response) LogComplete() {
-	fmt.Printf("[%s - %s] Handled request: %#v\n",
+	fmt.Printf("[%s - %s] Handled request: %#v %d\n",
 		time.Now().Format(time.RFC3339),
 		r.Request.GetSourceIP(),
 		r.Request.HttpRequest.URL.Path,
+		r.GetResponseCode(),
 	)
 }
