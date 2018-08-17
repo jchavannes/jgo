@@ -84,6 +84,15 @@ var defaultFuncMap = template.FuncMap{
 		}
 		return string(b)
 	},
+	"mod": func(i, j int) bool {
+		return i%j == 0
+	},
+	"add": func(a, b int) int {
+		return a + b
+	},
+	"minus": func(a, b int) int {
+		return a - b
+	},
 }
 
 func (r *Renderer) getTemplate() *template.Template {
