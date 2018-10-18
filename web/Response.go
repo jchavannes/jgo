@@ -46,20 +46,24 @@ func (r *Response) GetCsrfToken() string {
 	return r.Session.GetCsrfToken()
 }
 
-// Sets a new session cookie.
-func (r *Response) ResetOrCreateSession() {
-	r.Session = Session{
-		CookieId: CreateToken(),
-	}
+func (r *Response) SetCookie(key string, value string) {
 	cookie := http.Cookie{
-		Name:     r.Server.GetCookieName(),
-		Value:    url.QueryEscape(r.Session.CookieId),
+		Name:     key,
+		Value:    url.QueryEscape(value),
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   !r.Server.InsecureCookie,
 		MaxAge:   int(time.Hour) * 24 * 30,
 	}
 	http.SetCookie(r.Writer, &cookie)
+}
+
+// Sets a new session cookie.
+func (r *Response) ResetOrCreateSession() {
+	r.Session = Session{
+		CookieId: CreateToken(),
+	}
+	r.SetCookie(r.Server.GetCookieName(), r.Session.CookieId)
 }
 
 // Either gets existing session token or creates a new one.

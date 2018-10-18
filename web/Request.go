@@ -129,6 +129,10 @@ func (r *Request) GetCookie(key string) string {
 	return cookie.Value
 }
 
+func (r *Request) GetCookieBool(key string) bool {
+	return getBoolFromString(strings.ToLower(r.GetCookie(key)))
+}
+
 func (r *Request) GetURI() string {
 	return r.HttpRequest.RequestURI
 }
