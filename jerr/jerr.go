@@ -2,6 +2,7 @@ package jerr
 
 import (
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -27,6 +28,11 @@ func (e JError) Print() {
 
 func (e JError) Warn() {
 	fmt.Println(e.getText(true))
+}
+
+func (e JError) Fatal() {
+	e.Print()
+	os.Exit(1)
 }
 
 func (e JError) getText(warn bool) string {
