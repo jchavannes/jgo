@@ -3,6 +3,7 @@ package jlog
 import (
 	"fmt"
 	"io"
+	"time"
 )
 
 var (
@@ -23,6 +24,7 @@ func Log(message string) {
 }
 
 func Logf(message string, a ...interface{}) {
+	message = fmt.Sprintf("[%s] %s", time.Now().Format(time.RFC3339), message)
 	if logWriter != nil {
 		logWriter.Write([]byte(fmt.Sprintf(message, a...)))
 	} else {
