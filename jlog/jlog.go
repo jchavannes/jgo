@@ -20,7 +20,7 @@ func SetLogWriter(writer io.Writer) {
 }
 
 func Log(message string) {
-	Logf(message)
+	Logf(message + "\n")
 }
 
 func Logf(message string, a ...interface{}) {
