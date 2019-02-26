@@ -48,6 +48,9 @@ func (e JError) getText(warn bool) string {
 }
 
 func Get(message string, err error) JError {
+	if err == nil {
+		return Get(message, New("nil error!"))
+	}
 	var returnError JError
 	switch t := err.(type) {
 	case JError:
