@@ -13,6 +13,9 @@ import (
 // Name of cookie used for sessions.
 const CookieName = "session_id"
 
+// Maximum number of routes to display when starting up.
+const MaxRoutesDisplay = 3
+
 type Server struct {
 	AllowedExtensions []string
 	IsLoggedIn        func(*Response) bool
@@ -117,7 +120,8 @@ func (s *Server) addCatchAllRoute() {
 func (s *Server) setupHandlers() {
 	s.router = mux.NewRouter()
 	s.router.StrictSlash(s.StrictSlash)
-	if len(s.Routes) > 10 {
+	var showEachRoute = len(s.Routes) <= MaxRoutesDisplay
+	if ! showEachRoute {
 		fmt.Printf("Adding %d patterns to router.\n", len(s.Routes))
 	}
 	for _, routeTemp := range s.Routes {
@@ -126,7 +130,7 @@ func (s *Server) setupHandlers() {
 		if len(route.Name) > 0 {
 			name = " (" + route.Name + ")"
 		}
-		if len(s.Routes) <= 10 {
+		if showEachRoute {
 			fmt.Printf("Adding pattern to router: %s%s\n", route.Pattern, name)
 		}
 		s.router.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {

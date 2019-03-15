@@ -104,6 +104,11 @@ func (r *Request) GetUrlParameter(key string) string {
 	return r.HttpRequest.URL.Query().Get(key)
 }
 
+func (r *Request) GetUrlParameterSet(key string) bool {
+	_, ok := r.HttpRequest.URL.Query()[key]
+	return ok
+}
+
 func (r *Request) GetUrlParameterInt(key string) int {
 	i, _ := strconv.Atoi(r.GetUrlParameter(key))
 	return i
