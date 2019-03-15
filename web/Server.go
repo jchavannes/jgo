@@ -51,6 +51,7 @@ func GetDefaultAllowedFileExtensions() []string {
 func (s *Server) Run() error {
 	s.setupHandlers()
 	s.addCatchAllRoute()
+	s.router.SkipClean(true)
 	return s.startServer()
 }
 
