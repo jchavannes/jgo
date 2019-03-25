@@ -81,7 +81,7 @@ func Newf(format string, a ...interface{}) JError {
 	return New(fmt.Sprintf(format, a...))
 }
 
-func Combine(errorArray ...error) error {
+func Combine(errorArray ...error) JError {
 	var returnError JError
 	for _, err := range errorArray {
 		switch t := err.(type) {
