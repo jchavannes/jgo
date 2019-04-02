@@ -61,7 +61,7 @@ func (p Page) IsFirstPage() bool {
 }
 
 func (p Page) IsLastPage() bool {
-	return p.ItmCnt == 0
+	return p.ItmCnt < pageSize
 }
 
 func (p Page) GetPrevUrl() string {
