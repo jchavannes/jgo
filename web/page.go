@@ -15,6 +15,7 @@ type Page struct {
 	Page   uint
 	Offset uint
 	Url    string
+	ItmCnt int
 	Params map[string]string
 }
 
@@ -30,7 +31,10 @@ func (p Page) Next() uint {
 }
 
 func (p Page) GetUrl(params map[string]string) string {
-	var allParams = p.Params
+	var allParams = make(map[string]string)
+	for k, v := range p.Params {
+		allParams[k] = v
+	}
 	for k, v := range params {
 		allParams[k] = v
 	}
@@ -39,7 +43,11 @@ func (p Page) GetUrl(params map[string]string) string {
 	}
 	var parts []string
 	for k, v := range allParams {
-		parts = append(parts, fmt.Sprintf("%s=%s", k, v))
+		if v == "" {
+			parts = append(parts, fmt.Sprintf("%s", k))
+		} else {
+			parts = append(parts, fmt.Sprintf("%s=%s", k, v))
+		}
 	}
 	return fmt.Sprintf("%s?%s", p.Url, strings.Join(parts, "&"))
 }
@@ -50,6 +58,10 @@ func (p Page) GetPageUrl(page uint) string {
 
 func (p Page) IsFirstPage() bool {
 	return p.Page == 1
+}
+
+func (p Page) IsLastPage() bool {
+	return p.ItmCnt == 0
 }
 
 func (p Page) GetPrevUrl() string {
@@ -67,11 +79,11 @@ func SetPageSize(size int) {
 	pageSize = size
 }
 
-func GetPage(r *Response, url string) Page {
+func GetPage(r *Response, url string) *Page {
 	return GetPageWithSize(r, url, pageSize)
 }
 
-func GetPageWithSize(r *Response, url string, size int) Page {
+func GetPageWithSize(r *Response, url string, size int) *Page {
 	pageInput := r.Request.GetUrlParameterUInt("page")
 	if pageInput < 1 {
 		pageInput = 1
@@ -83,6 +95,6 @@ func GetPageWithSize(r *Response, url string, size int) Page {
 		Url:    url,
 		Params: map[string]string{},
 	}
-	r.Helper["Page"] = page
-	return page
+	r.Helper["Page"] = &page
+	return &page
 }
