@@ -3,13 +3,12 @@ package web
 import (
 	"errors"
 	"fmt"
+	"github.com/jchavannes/jgo/jfmt"
 	"io"
 	"io/ioutil"
 	"math/rand"
 	"os"
 	"path/filepath"
-	"regexp"
-	"strconv"
 	"strings"
 	"text/template"
 )
@@ -41,48 +40,22 @@ var defaultFuncMap = template.FuncMap{
 		return dict, nil
 	},
 	"formatFloat": func(f float32) string {
-		str := strconv.FormatFloat(float64(f), 'f', 2, 32)
-		re := regexp.MustCompile("(\\d+)(\\d{3})")
-		for i := 0; i < (len(str)-1)/3; i++ {
-			str = re.ReplaceAllString(str, "$1,$2")
-		}
-		return str
+		return jfmt.AddCommasFloat(float64(f))
 	},
 	"formatBigFloat": func(f float64) string {
-		str := strconv.FormatFloat(f, 'f', 8, 64)
-		return str
+		return jfmt.AddCommasFloat(f)
 	},
-	"formatBigUInt": func(f uint64) string {
-		str := strconv.Itoa(int(f))
-		re := regexp.MustCompile("(\\d+)(\\d{3})")
-		for i := 0; i < (len(str)-1)/3; i++ {
-			str = re.ReplaceAllString(str, "$1,$2")
-		}
-		return str
+	"formatBigUInt": func(i uint64) string {
+		return jfmt.AddCommasUint(i)
 	},
-	"formatBigInt": func(f int64) string {
-		str := strconv.Itoa(int(f))
-		re := regexp.MustCompile("(\\d+)(\\d{3})")
-		for i := 0; i < (len(str)-1)/3; i++ {
-			str = re.ReplaceAllString(str, "$1,$2")
-		}
-		return str
+	"formatBigInt": func(i int64) string {
+		return jfmt.AddCommas(i)
 	},
-	"formatUInt": func(f uint) string {
-		str := strconv.Itoa(int(f))
-		re := regexp.MustCompile("(\\d+)(\\d{3})")
-		for i := 0; i < (len(str)-1)/3; i++ {
-			str = re.ReplaceAllString(str, "$1,$2")
-		}
-		return str
+	"formatUInt": func(i uint) string {
+		return jfmt.AddCommasUint(uint64(i))
 	},
-	"formatInt": func(f int) string {
-		str := strconv.Itoa(f)
-		re := regexp.MustCompile("(\\d+)(\\d{3})")
-		for i := 0; i < (len(str)-1)/3; i++ {
-			str = re.ReplaceAllString(str, "$1,$2")
-		}
-		return str
+	"formatInt": func(i int) string {
+		return jfmt.AddCommas(int64(i))
 	},
 	"getUnique": func(n int) string {
 		const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
