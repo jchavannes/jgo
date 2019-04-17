@@ -1,6 +1,7 @@
 package jfmt
 
 import (
+	"fmt"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 	"strings"
@@ -24,7 +25,10 @@ func AddCommasUint(i uint64) string {
 	return printer.Sprintf("%d", i)
 }
 
-func AddCommasFloat(f float64) string {
+func AddCommasFloat(f float64, decimals ...int) string {
 	initPrinter()
+	if len(decimals) > 0 {
+		return printer.Sprintf(fmt.Sprintf("%%.%df", decimals[0]), f)
+	}
 	return strings.TrimRight(strings.TrimRight(printer.Sprintf("%f", f), "0"), ".")
 }

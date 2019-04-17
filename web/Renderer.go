@@ -39,11 +39,11 @@ var defaultFuncMap = template.FuncMap{
 		}
 		return dict, nil
 	},
-	"formatFloat": func(f float32) string {
-		return jfmt.AddCommasFloat(float64(f))
+	"formatFloat": func(f float32, decimals ...int) string {
+		return jfmt.AddCommasFloat(float64(f), decimals...)
 	},
-	"formatBigFloat": func(f float64) string {
-		return jfmt.AddCommasFloat(f)
+	"formatBigFloat": func(f float64, decimals ...int) string {
+		return jfmt.AddCommasFloat(f, decimals...)
 	},
 	"formatBigUInt": func(i uint64) string {
 		return jfmt.AddCommasUint(i)
