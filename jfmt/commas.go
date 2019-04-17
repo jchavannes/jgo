@@ -1,45 +1,30 @@
 package jfmt
 
 import (
-	"fmt"
-	"regexp"
-	"strconv"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+	"strings"
 )
 
-var commaRex *regexp.Regexp
+var printer *message.Printer
 
-func initCommaRex() {
-	if commaRex == nil {
-		commaRex = regexp.MustCompile("(\\d+)(\\d{3})")
+func initPrinter() {
+	if printer == nil {
+		printer = message.NewPrinter(language.English)
 	}
 }
 
 func AddCommas(i int64) string {
-	initCommaRex()
-	str := fmt.Sprintf("%d", i)
-	for n := ""; n != str; {
-		n = str
-		str = commaRex.ReplaceAllString(str, "$1,$2")
-	}
-	return str
+	initPrinter()
+	return printer.Sprintf("%d", i)
 }
 
 func AddCommasUint(i uint64) string {
-	initCommaRex()
-	str := fmt.Sprintf("%d", i)
-	for n := ""; n != str; {
-		n = str
-		str = commaRex.ReplaceAllString(str, "$1,$2")
-	}
-	return str
+	initPrinter()
+	return printer.Sprintf("%d", i)
 }
 
 func AddCommasFloat(f float64) string {
-	initCommaRex()
-	str := strconv.FormatFloat(f, 'f', 8, 64)
-	for n := ""; n != str; {
-		n = str
-		str = commaRex.ReplaceAllString(str, "$1,$2")
-	}
-	return str
+	initPrinter()
+	return strings.TrimRight(strings.TrimRight(printer.Sprintf("%f", f), "0"), ".")
 }
