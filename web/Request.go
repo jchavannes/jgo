@@ -52,8 +52,19 @@ func (r *Request) GetFormValueInt(key string) int {
 	return i
 }
 
+func (r *Request) GetFormValueInt64(key string) int64 {
+	r.HttpRequest.ParseForm()
+	valString := r.HttpRequest.Form.Get(key)
+	i, _:= strconv.ParseInt(valString, 0, 64)
+	return i
+}
+
 func (r *Request) GetFormValueUint(key string) uint {
 	return uint(r.GetFormValueInt(key))
+}
+
+func (r *Request) GetFormValueUint64(key string) uint64 {
+	return uint64(r.GetFormValueInt64(key))
 }
 
 func (r *Request) GetFormValueFloat(key string) float32 {
