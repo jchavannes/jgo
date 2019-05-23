@@ -1,8 +1,8 @@
 package web
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/jchavannes/jgo/jlog"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -57,10 +57,10 @@ func (s *Server) Run() error {
 
 func (s *Server) addCatchAllRoute() {
 	if len(s.StaticFilesDir) > 0 {
-		fmt.Printf("Static files directory: %s\n", s.StaticFilesDir)
+		jlog.Logf("Static files directory: %s\n", s.StaticFilesDir)
 	}
 	if len(s.TemplatesDir) > 0 {
-		fmt.Printf("Templates directory: %s\n", s.TemplatesDir)
+		jlog.Logf("Templates directory: %s\n", s.TemplatesDir)
 	}
 	s.router.PathPrefix("/").Handler(Handler{
 		Handler: func(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +123,7 @@ func (s *Server) setupHandlers() {
 	s.router.StrictSlash(s.StrictSlash)
 	var showEachRoute = len(s.Routes) <= MaxRoutesDisplay
 	if ! showEachRoute {
-		fmt.Printf("Adding %d patterns to router.\n", len(s.Routes))
+		jlog.Logf("Adding %d patterns to router.\n", len(s.Routes))
 	}
 	for _, routeTemp := range s.Routes {
 		route := routeTemp
@@ -132,7 +132,7 @@ func (s *Server) setupHandlers() {
 			name = " (" + route.Name + ")"
 		}
 		if showEachRoute {
-			fmt.Printf("Adding pattern to router: %s%s\n", route.Pattern, name)
+			jlog.Logf("Adding pattern to router: %s%s\n", route.Pattern, name)
 		}
 		s.router.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
 			response := getResponse(w, r, s)
@@ -188,6 +188,6 @@ func (s *Server) startServer() error {
 		Handler: s.router,
 		Addr:    ":" + strconv.Itoa(s.Port),
 	}
-	fmt.Printf("Starting server on port %d...\n", s.Port)
+	jlog.Logf("Starting server on port %d...\n", s.Port)
 	return srv.ListenAndServe()
 }
