@@ -19,8 +19,8 @@ func SetLogWriter(writer io.Writer) {
 	logWriter = writer
 }
 
-func Log(message string) {
-	Logf(message + "\n")
+func Log(a ...interface{}) {
+	Logf(fmt.Sprintln(a...))
 }
 
 func Logf(message string, a ...interface{}) {

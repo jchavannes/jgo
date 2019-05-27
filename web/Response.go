@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/jchavannes/jgo/jerr"
+	"github.com/jchavannes/jgo/jlog"
 	"html/template"
 	"net/http"
 	"net/url"
@@ -128,7 +129,7 @@ func (r *Response) Render() error {
 func (r *Response) RenderTemplate(templateName string) error {
 	renderer, err := GetRenderer(r.Server.TemplatesDir)
 	if err != nil {
-		fmt.Println(err)
+		jerr.Get("error getting renderer", err).Print()
 	}
 
 	if r.funcMap != nil {
@@ -155,7 +156,7 @@ func (r *Response) RenderTemplate(templateName string) error {
 	}, r.Writer, r.Helper)
 
 	if err != nil {
-		fmt.Printf("Error rendering template: %s\n", err)
+		jlog.Logf("Error rendering template: %s\n", err)
 	}
 
 	return err
@@ -179,11 +180,11 @@ func (r *Response) GetWebSocket() (*Socket, error) {
 
 func (r *Response) Error(err error, responseCode int) {
 	r.SetResponseCode(responseCode)
-	fmt.Println(jerr.Get(fmt.Sprintf("Error with request: %#v", r.Request.HttpRequest.URL.Path), err))
+	jlog.Log(jerr.Get(fmt.Sprintf("Error with request: %#v", r.Request.HttpRequest.URL.Path), err))
 }
 
 func (r *Response) LogComplete() {
-	fmt.Printf("[%s - %s] Handled request: %#v %d\n",
+	jlog.Logf("[%s - %s] Handled request: %#v %d\n",
 		time.Now().Format(time.RFC3339),
 		r.Request.GetSourceIP(),
 		r.Request.HttpRequest.URL.Path,
