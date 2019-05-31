@@ -11,6 +11,7 @@ const (
 	UrlParamInteger      UrlParamType = "integer"
 	UrlParamString       UrlParamType = "string"
 	UrlParamString2      UrlParamType = "string2"
+	UrlParamString3      UrlParamType = "string3"
 	UrlParamAlphaNumeric UrlParamType = "alpha-numeric"
 	UrlParamAny          UrlParamType = "any"
 )
@@ -28,6 +29,8 @@ func (u UrlParam) UrlPart() string {
 		return "{" + u.Id + ":[A-Za-z0-9]+}"
 	case UrlParamString2:
 		return "{" + u.Id + ":[A-Za-z0-9-_]+}"
+	case UrlParamString3:
+		return "{" + u.Id + ":[A-Za-z0-9:]+}"
 	case UrlParamAny:
 		return "{" + u.Id + ":.*}"
 	}
