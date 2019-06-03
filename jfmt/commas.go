@@ -30,5 +30,5 @@ func AddCommasFloat(f float64, decimals ...int) string {
 	if len(decimals) > 0 {
 		return printer.Sprintf(fmt.Sprintf("%%.%df", decimals[0]), f)
 	}
-	return strings.TrimRight(strings.TrimRight(printer.Sprintf("%f", f), "0"), ".")
+	return strings.TrimRight(strings.TrimRight(printer.Sprintf("%.9f", f), "0"), ".")
 }
