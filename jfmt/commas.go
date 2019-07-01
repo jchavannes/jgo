@@ -27,8 +27,14 @@ func AddCommasUint(i uint64) string {
 
 func AddCommasFloat(f float64, decimals ...int) string {
 	initPrinter()
+	var str string
 	if len(decimals) > 0 {
-		return printer.Sprintf(fmt.Sprintf("%%.%df", decimals[0]), f)
+		str = printer.Sprintf(fmt.Sprintf("%%.%df", decimals[0]), f)
+	} else {
+		str = printer.Sprintf("%.9f", f)
 	}
-	return strings.TrimRight(strings.TrimRight(printer.Sprintf("%.9f", f), "0"), ".")
+	if len(decimals) == 0 || (len(decimals) >= 2 && decimals[1] == 0) {
+		str = strings.TrimRight(strings.TrimRight(str, "0"), ".")
+	}
+	return str
 }
