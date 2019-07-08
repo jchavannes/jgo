@@ -1,6 +1,9 @@
 package pubsub
 
+import "time"
+
 type Subscriber struct {
 	EventId string
-	Listen  chan bool
+	Time    time.Time
+	Listen  chan error
 }

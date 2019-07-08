@@ -15,6 +15,7 @@ type Page struct {
 	Page   uint
 	Offset uint
 	Url    string
+	Sel    string
 	ItmCnt int
 	Params map[string]string
 }

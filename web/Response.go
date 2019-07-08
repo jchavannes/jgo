@@ -156,7 +156,7 @@ func (r *Response) RenderTemplate(templateName string) error {
 	}, r.Writer, r.Helper)
 
 	if err != nil {
-		jlog.Logf("Error rendering template: %s\n", err)
+		jlog.Logf("error rendering template: %s\n", err)
 	}
 
 	return err
@@ -180,7 +180,7 @@ func (r *Response) GetWebSocket() (*Socket, error) {
 
 func (r *Response) Error(err error, responseCode int) {
 	r.SetResponseCode(responseCode)
-	jlog.Log(jerr.Get(fmt.Sprintf("Error with request: %#v", r.Request.HttpRequest.URL.Path), err))
+	jlog.Log(jerr.Get(fmt.Sprintf("error with request: %#v", r.Request.HttpRequest.URL.Path), err))
 }
 
 func (r *Response) LogComplete() {
