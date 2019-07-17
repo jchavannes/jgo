@@ -39,6 +39,14 @@ var defaultFuncMap = template.FuncMap{
 		}
 		return dict, nil
 	},
+	"inSlice": func(needle string, haystack ...string) bool {
+		for _, hay := range haystack {
+			if needle == hay {
+				return true
+			}
+		}
+		return false
+	},
 	"formatFloat": func(f float32, decimals ...int) string {
 		return jfmt.AddCommasFloat(float64(f), decimals...)
 	},
