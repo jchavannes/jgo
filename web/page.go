@@ -18,6 +18,7 @@ type Page struct {
 	Sel    string
 	ItmCnt int
 	Params map[string]string
+	Hash   string
 }
 
 func (p Page) Prev() uint {
@@ -50,7 +51,11 @@ func (p Page) GetUrl(params map[string]string) string {
 			parts = append(parts, fmt.Sprintf("%s=%s", k, v))
 		}
 	}
-	return fmt.Sprintf("%s?%s", p.Url, strings.Join(parts, "&"))
+	var hash string
+	if p.Hash != "" {
+		hash = fmt.Sprintf("#%s", p.Hash)
+	}
+	return fmt.Sprintf("%s?%s%s", p.Url, strings.Join(parts, "&"), hash)
 }
 
 func (p Page) GetPageUrl(page uint) string {
