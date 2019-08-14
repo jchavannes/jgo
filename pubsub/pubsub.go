@@ -8,8 +8,9 @@ import (
 type PubSub struct {
 	Subscribers []*Subscriber
 	Events      []*Event
-	Timeout     time.Duration
-	ExpireTime  time.Duration
+
+	SubscriberTimeout time.Duration
+	EventTimeout      time.Duration
 }
 
 func (p *PubSub) Subscribe(eventId string) *Subscriber {
@@ -67,15 +68,15 @@ func (p *PubSub) initExpireChecks() {
 }
 
 func (p *PubSub) checkExpired() {
-	expireTime := time.Now().Add(-p.ExpireTime)
+	eventTimeout := time.Now().Add(-p.EventTimeout)
 	for i := 0; i < len(p.Events); i++ {
-		if p.Events[i].Time.Before(expireTime) {
+		if p.Events[i].Time.Before(eventTimeout) {
 			p.Events = append(p.Events[:i], p.Events[i+1:]...)
 			i--
 		}
 	}
-	if p.Timeout > 0 {
-		timeout := time.Now().Add(-p.Timeout)
+	if p.SubscriberTimeout > 0 {
+		timeout := time.Now().Add(-p.SubscriberTimeout)
 		for i := 0; i < len(p.Subscribers); i++ {
 			if p.Subscribers[i].Time.Before(timeout) {
 				go func(sub *Subscriber) { sub.Listen <- jerr.New("error pub sub timeout reached") }(p.Subscribers[i])

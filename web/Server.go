@@ -23,6 +23,7 @@ type Server struct {
 	Port              int
 	PreHandler        func(*Response)
 	PostHandler       func(*Response)
+	ErrorHandler      func(*Response, error)
 	GetCsrfToken      func(string) string
 	Routes            []Route
 	SessionKey        string

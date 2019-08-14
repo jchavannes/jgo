@@ -1,7 +1,9 @@
 package jerr
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/jchavannes/jgo/jutil"
 	"os"
 	"strings"
 )
@@ -47,21 +49,31 @@ func (e JError) getText(warn bool) string {
 	}
 }
 
+func (e JError) JSON() string {
+	data, _ := json.Marshal(jutil.ReverseStringSlice(e.Messages))
+	return string(data)
+}
+
 func Get(message string, err error) JError {
 	if err == nil {
 		return Get(message, New("nil error!"))
+	}
+	returnError := Create(err)
+	returnError.Messages = append(returnError.Messages, message)
+	return returnError
+}
+
+func Create(err error) JError {
+	if err == nil {
+		return Create(New("nil error!"))
 	}
 	var returnError JError
 	switch t := err.(type) {
 	case JError:
 		returnError = t
-		returnError.Messages = append(returnError.Messages, message)
 	default:
 		returnError = JError{
-			Messages: []string{
-				err.Error(),
-				message,
-			},
+			Messages: []string{err.Error()},
 		}
 	}
 	return returnError

@@ -152,8 +152,14 @@ func (r *Response) RenderTemplate(templateName string) error {
 	err = renderer.Render([]string{
 		templateName + ".html",
 		indexTemplate,
-		"404.html",
 	}, r.Writer, r.Helper)
+
+	if jerr.HasError(err, UnableToFindTemplateErrorMsg) {
+		r.Error(jerr.Get("template not found", err), http.StatusNotFound)
+		err = renderer.Render([]string{
+			"404.html",
+		}, r.Writer, r.Helper)
+	}
 
 	if err != nil {
 		jlog.Logf("error rendering template: %s\n", err)
@@ -180,7 +186,11 @@ func (r *Response) GetWebSocket() (*Socket, error) {
 
 func (r *Response) Error(err error, responseCode int) {
 	r.SetResponseCode(responseCode)
-	jlog.Log(jerr.Get(fmt.Sprintf("error with request: %#v", r.Request.HttpRequest.URL.Path), err))
+	err = jerr.Get(fmt.Sprintf("error with request: %#v", r.Request.HttpRequest.URL.Path), err)
+	jlog.Log(err)
+	if r.Server.ErrorHandler != nil {
+		r.Server.ErrorHandler(r, err)
+	}
 }
 
 func (r *Response) LogComplete() {

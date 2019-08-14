@@ -99,6 +99,8 @@ func (r *Renderer) SetFuncMap(funcMap map[string]interface{}) {
 	r.funcMap = template.FuncMap(funcMap)
 }
 
+const UnableToFindTemplateErrorMsg = "unable to find template"
+
 func (r *Renderer) Render(names []string, writer io.Writer, data interface{}) error {
 	t := r.getTemplate()
 	for _, name := range names {
@@ -106,7 +108,7 @@ func (r *Renderer) Render(names []string, writer io.Writer, data interface{}) er
 			return t.ExecuteTemplate(writer, name, data)
 		}
 	}
-	return errors.New("unable to find template")
+	return errors.New(UnableToFindTemplateErrorMsg)
 }
 
 func GetRenderer(directory string) (*Renderer, error) {
