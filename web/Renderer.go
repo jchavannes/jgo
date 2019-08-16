@@ -22,6 +22,19 @@ var defaultFuncMap = template.FuncMap{
 	"loop": func(n uint) []struct{} {
 		return make([]struct{}, n)
 	},
+	"substr": func(s string, ints ...int) string {
+		var start, end int
+		if len(ints) >= 2 {
+			start = ints[0]
+			end = ints[1]
+		} else {
+			end = ints[0]
+		}
+		if start > end || end > len(s) {
+			return s
+		}
+		return s[start:end]
+	},
 	// Allows passing in multiple variables into a template.
 	// Pass in pairs of keys and values.
 	// Example: {{ template "index.html" dict "MyVar" .SomeVar "MySecondVar" .SomeOtherVar }}
