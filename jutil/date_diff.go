@@ -22,13 +22,24 @@ func (d DateDiff) String() string {
 }
 
 func (d DateDiff) Months() float32 {
-	return float32(d.Year*12+d.Month) + float32(d.Day)/float32(d.DaysInLastMonth())
+	return float32(d.Year*12+d.Month) + float32(d.DaysRounded())/float32(d.DaysInLastMonth())
+}
+
+func (d DateDiff) DaysRounded() int {
+	if d.Hour > 0 || d.Min > 0 || d.Sec > 0 {
+		return d.Day + 1
+	}
+	return d.Day
 }
 
 // https://github.com/jinzhu/now/blob/928c32c8eb60e699b591de5911a1c8f50d11d15a/now.go#L44
 func (d DateDiff) DaysInLastMonth() int {
+	return GetDaysInMonth(d.b.AddDate(0, -1, 0))
+}
+
+func GetDaysInMonth(t time.Time) int {
 	lastDayOfMonth := time.
-		Date(d.b.Year(), d.b.Month(), 1, 0, 0, 0, 0, d.b.Location()).
+		Date(t.Year(), t.Month(), 1, 0, 0, 0, 0, t.Location()).
 		AddDate(0, 1, 0).
 		Add(-time.Nanosecond)
 	return lastDayOfMonth.Day()
@@ -71,8 +82,7 @@ func GetDateDiff(a, b time.Time) (diff DateDiff) {
 		diff.Day--
 	}
 	if diff.Day < 0 {
-		t := time.Date(y1, M1, 32, 0, 0, 0, 0, time.UTC)
-		diff.Day += 32 - t.Day()
+		diff.Day += GetDaysInMonth(b.AddDate(0, -1, 0))
 		diff.Month--
 	}
 	if diff.Month < 0 {
