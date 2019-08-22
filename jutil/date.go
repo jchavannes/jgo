@@ -30,3 +30,12 @@ func DateGTE(a, b time.Time) bool {
 func DateLTE(a, b time.Time) bool {
 	return a.Before(b) || a.Equal(b)
 }
+
+func CopyTimeToDate(src, dst time.Time) time.Time {
+	h1, m1, s1 := src.Clock()
+	h2, m2, s2 := dst.Clock()
+	return dst.Add(time.Duration(h1-h2)*time.Hour +
+		time.Duration(m1-m2)*time.Minute +
+		time.Duration(s1-s2)*time.Second +
+		time.Duration(src.Nanosecond()-dst.Nanosecond()))
+}
