@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+	"time"
 )
 
 type Renderer struct {
@@ -95,6 +96,27 @@ var defaultFuncMap = template.FuncMap{
 	"minus": func(a, b int) int {
 		return a - b
 	},
+	"before": func(a string) bool {
+		t := getTime(a)
+		return time.Now().Before(t)
+	},
+	"after": func(a string) bool {
+		t := getTime(a)
+		return time.Now().After(t)
+	},
+}
+
+func getTime(a string) time.Time {
+	var fmt string
+	if len(a) == 16 {
+		fmt = "2006-01-02 15:04"
+	} else if len(a) == 10 {
+		fmt = "2006-01-02"
+	} else {
+		return time.Time{}
+	}
+	t, _ := time.ParseInLocation(fmt, a, time.Local)
+	return t
 }
 
 func (r *Renderer) getTemplate() *template.Template {

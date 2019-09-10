@@ -1,6 +1,7 @@
 package web
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -79,6 +80,11 @@ func (p Page) GetPrevUrl() string {
 
 func (p Page) GetNextUrl() string {
 	return p.GetPageUrl(p.Next())
+}
+
+func (p Page) GetJsonParams() string {
+	jsonParams, _ := json.Marshal(p.Params)
+	return string(jsonParams)
 }
 
 func SetPageSize(size int) {
