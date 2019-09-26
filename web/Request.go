@@ -3,6 +3,7 @@ package web
 import (
 	"errors"
 	"github.com/gorilla/mux"
+	"github.com/jchavannes/jgo/jutil"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -32,31 +33,19 @@ func (r *Request) GetFormValue(key string) string {
 
 func (r *Request) GetFormValueBool(key string) bool {
 	r.HttpRequest.ParseForm()
-	return getBoolFromString(strings.ToLower(r.HttpRequest.Form.Get(key)))
-}
-
-func getBoolFromString(val string) bool {
-	if val == "true" {
-		return true
-	} else if val == "false" {
-		return false
-	}
-	i, _ := strconv.Atoi(val)
-	return i == 1
+	return jutil.GetBoolFromString(r.HttpRequest.Form.Get(key))
 }
 
 func (r *Request) GetFormValueInt(key string) int {
 	r.HttpRequest.ParseForm()
 	valString := r.HttpRequest.Form.Get(key)
-	i, _ := strconv.Atoi(valString)
-	return i
+	return jutil.GetIntFromString(valString)
 }
 
 func (r *Request) GetFormValueInt64(key string) int64 {
 	r.HttpRequest.ParseForm()
 	valString := r.HttpRequest.Form.Get(key)
-	i, _ := strconv.ParseInt(valString, 0, 64)
-	return i
+	return jutil.GetInt64FromString(valString)
 }
 
 func (r *Request) GetFormValueUint(key string) uint {
@@ -70,15 +59,13 @@ func (r *Request) GetFormValueUint64(key string) uint64 {
 func (r *Request) GetFormValueFloat(key string) float32 {
 	r.HttpRequest.ParseForm()
 	valString := r.HttpRequest.Form.Get(key)
-	i, _ := strconv.ParseFloat(valString, 32)
-	return float32(i)
+	return float32(jutil.GetFloatFromString(valString, 32))
 }
 
 func (r *Request) GetFormValueFloat64(key string) float64 {
 	r.HttpRequest.ParseForm()
 	valString := r.HttpRequest.Form.Get(key)
-	i, _ := strconv.ParseFloat(valString, 64)
-	return i
+	return jutil.GetFloatFromString(valString, 64)
 }
 
 func (r *Request) GetFormValueSlice(key string) []string {
@@ -133,7 +120,7 @@ func (r *Request) GetUrlParameterInt(key string) int {
 }
 
 func (r *Request) GetUrlParameterBool(key string) bool {
-	return getBoolFromString(strings.ToLower(r.GetUrlParameter(key)))
+	return jutil.GetBoolFromString(strings.ToLower(r.GetUrlParameter(key)))
 }
 
 func (r *Request) GetUrlParameterUInt(key string) uint {
@@ -153,7 +140,7 @@ func (r *Request) GetCookie(key string) string {
 }
 
 func (r *Request) GetCookieBool(key string) bool {
-	return getBoolFromString(strings.ToLower(r.GetCookie(key)))
+	return jutil.GetBoolFromString(strings.ToLower(r.GetCookie(key)))
 }
 
 func (r *Request) GetURI() string {
