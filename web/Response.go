@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/jlog"
+	"github.com/jchavannes/jgo/jutil"
 	"html/template"
 	"net/http"
 	"net/url"
@@ -25,6 +26,7 @@ type Response struct {
 	Request Request
 	Server  *Server
 	Session Session
+	Static  bool
 	code    int
 	Writer  http.ResponseWriter
 }
@@ -194,8 +196,8 @@ func (r *Response) Error(err error, responseCode int) {
 }
 
 func (r *Response) LogComplete() {
-	jlog.Logf("[%s - %s] Handled request: %#v %d\n",
-		time.Now().Format(time.RFC3339),
+	jlog.Logf("%s %s %s %d\n",
+		jutil.ShortHash(r.Session.CookieId),
 		r.Request.GetSourceIP(),
 		r.Request.HttpRequest.URL.Path,
 		r.GetResponseCode(),

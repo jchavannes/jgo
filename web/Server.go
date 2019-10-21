@@ -65,7 +65,7 @@ func (s *Server) addCatchAllRoute() {
 	}
 	s.router.PathPrefix("/").Handler(Handler{
 		Handler: func(w http.ResponseWriter, r *http.Request) {
-			response := getResponse(w, r, s)
+			response := getResponse(w, r, s, true)
 			defer response.LogComplete()
 			if response.ResponseCodeSet() {
 				return
@@ -136,7 +136,7 @@ func (s *Server) setupHandlers() {
 			jlog.Logf("Adding pattern to router: %s%s\n", route.Pattern, name)
 		}
 		s.router.HandleFunc(route.Pattern, func(w http.ResponseWriter, r *http.Request) {
-			response := getResponse(w, r, s)
+			response := getResponse(w, r, s, false)
 			response.Pattern = route.Pattern
 			defer response.LogComplete()
 			if response.ResponseCodeSet() {
@@ -165,13 +165,14 @@ func (s *Server) GetCookieName() string {
 	return cookieName
 }
 
-func getResponse(w http.ResponseWriter, r *http.Request, s *Server) Response {
+func getResponse(w http.ResponseWriter, r *http.Request, s *Server, static bool) Response {
 	response := Response{
 		Helper:  make(map[string]interface{}),
 		Request: Request{HttpRequest: *r},
 		Server:  s,
 		StartTs: time.Now(),
 		Writer:  w,
+		Static:  static,
 	}
 	response.Helper["URI"] = r.RequestURI
 	if s.UseSessions {
