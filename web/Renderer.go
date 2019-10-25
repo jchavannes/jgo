@@ -3,6 +3,7 @@ package web
 import (
 	"errors"
 	"fmt"
+	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/jfmt"
 	"io"
 	"io/ioutil"
@@ -122,7 +123,7 @@ func getTime(a string) time.Time {
 	return t
 }
 
-func (r *Renderer) getTemplate() *template.Template {
+func (r *Renderer) getTemplate() (*template.Template, error) {
 	funcMap := make(template.FuncMap)
 	for k, v := range defaultFuncMap {
 		funcMap[k] = v
@@ -130,7 +131,11 @@ func (r *Renderer) getTemplate() *template.Template {
 	for k, v := range r.funcMap {
 		funcMap[k] = v
 	}
-	return template.Must(template.New("_base").Funcs(funcMap).Parse(r.templateText))
+	t, err := template.New("_base").Funcs(funcMap).Parse(r.templateText)
+	if err != nil {
+		return nil, jerr.Get("error parsing template", err)
+	}
+	return t, nil
 }
 
 func (r *Renderer) SetFuncMap(funcMap map[string]interface{}) {
@@ -140,7 +145,10 @@ func (r *Renderer) SetFuncMap(funcMap map[string]interface{}) {
 const UnableToFindTemplateErrorMsg = "unable to find template"
 
 func (r *Renderer) Render(names []string, writer io.Writer, data interface{}) error {
-	t := r.getTemplate()
+	t, err := r.getTemplate()
+	if err != nil {
+		return jerr.Get("error getting template", err)
+	}
 	for _, name := range names {
 		if t.Lookup(name) != nil {
 			return t.ExecuteTemplate(writer, name, data)
