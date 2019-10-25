@@ -23,6 +23,9 @@ var defaultFuncMap = template.FuncMap{
 	"loop": func(n uint) []struct{} {
 		return make([]struct{}, n)
 	},
+	"contains": func(s, substr string) bool {
+		return strings.Contains(s, substr)
+	},
 	"substr": func(s string, ints ...int) string {
 		var start, end int
 		if len(ints) >= 2 {
