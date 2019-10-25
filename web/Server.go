@@ -2,9 +2,11 @@ package web
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/jlog"
 	"net/http"
 	"regexp"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -149,6 +151,13 @@ func (s *Server) setupHandlers() {
 			if s.IsLoggedIn != nil && route.NeedsLogin && ! s.IsLoggedIn(&response) {
 				return
 			}
+			defer func() {
+				if r := recover(); r != nil {
+					if err, ok := r.(error); ok {
+						response.Error(jerr.Getf(err, "fatal error processing response, stack: %s", debug.Stack()), http.StatusInternalServerError)
+					}
+				}
+			}()
 			route.Handler(&response)
 			if s.PostHandler != nil {
 				s.PostHandler(&response)
