@@ -154,7 +154,8 @@ func (s *Server) setupHandlers() {
 			defer func() {
 				if r := recover(); r != nil {
 					if err, ok := r.(error); ok {
-						response.Error(jerr.Getf(err, "fatal error processing response, stack: %s", debug.Stack()), http.StatusInternalServerError)
+						err = jerr.Getf(err, "fatal error processing response, stack: %s", debug.Stack())
+						response.Error(err, http.StatusInternalServerError)
 					}
 				}
 			}()
