@@ -9,6 +9,9 @@ func ShortHash(hash string) string {
 }
 
 func ShortHashLen(hash string, prefixSuffixLen int) string {
+	if len(hash) < prefixSuffixLen {
+		return hash
+	}
 	hashRunes := []rune(hash)
 	return string(hashRunes[:prefixSuffixLen]) + "..." + string(hashRunes[64-prefixSuffixLen:])
 }
