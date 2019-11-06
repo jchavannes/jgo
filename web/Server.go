@@ -153,10 +153,12 @@ func (s *Server) setupHandlers() {
 			}
 			defer func() {
 				if r := recover(); r != nil {
-					if err, ok := r.(error); ok {
-						err = jerr.Getf(err, "fatal error processing response, stack: %s", debug.Stack())
-						response.Error(err, http.StatusInternalServerError)
+					err, ok := r.(error)
+					if !ok {
+						err = jerr.Newf("panic: %v", r)
 					}
+					err = jerr.Combine(jerr.Newf("fatal error processing response, stack: %s", debug.Stack()), err)
+					response.Error(err, http.StatusInternalServerError)
 				}
 			}()
 			route.Handler(&response)
