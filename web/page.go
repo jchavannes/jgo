@@ -33,6 +33,10 @@ func (p Page) Next() uint {
 	return p.Page + 1
 }
 
+func (p Page) Needed() bool {
+	return ! p.IsFirstPage() || ! p.IsLastPage()
+}
+
 func (p Page) GetUrl(params map[string]string) string {
 	var allParams = make(map[string]string)
 	for k, v := range p.Params {
