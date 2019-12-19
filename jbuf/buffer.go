@@ -3,7 +3,7 @@ package jbuf
 type Item interface {
 }
 
-type buffer struct {
+type Buffer struct {
 	new   chan interface{}
 	done  chan struct{}
 	buf   []interface{}
@@ -12,15 +12,15 @@ type buffer struct {
 	handle func([]interface{})
 }
 
-func NewBuffer(handle func([]interface{})) *buffer {
-	var updater = &buffer{
+func NewBuffer(handle func([]interface{})) *Buffer {
+	var updater = &Buffer{
 		handle: handle,
 	}
 	updater.init()
 	return updater
 }
 
-func (u *buffer) init() {
+func (u *Buffer) init() {
 	u.new = make(chan interface{})
 	u.done = make(chan struct{})
 	go func() {
@@ -45,11 +45,11 @@ func (u *buffer) init() {
 	}()
 }
 
-func (u *buffer) Buffer(item interface{}) {
+func (u *Buffer) Buffer(item interface{}) {
 	u.new <- item
 }
 
-func (u *buffer) process(buf []interface{}) {
+func (u *Buffer) process(buf []interface{}) {
 	u.handle(buf)
 	u.done <- struct{}{}
 }
