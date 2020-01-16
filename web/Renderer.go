@@ -10,6 +10,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"text/template"
 	"time"
@@ -107,6 +108,9 @@ var defaultFuncMap = template.FuncMap{
 	"after": func(a string) bool {
 		t := getTime(a)
 		return time.Now().After(t)
+	},
+	"isNil": func(a interface{}) bool {
+		return a == nil || (reflect.ValueOf(a).Kind() == reflect.Ptr && reflect.ValueOf(a).IsNil())
 	},
 }
 
