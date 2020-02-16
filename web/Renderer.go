@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/jfmt"
+	"github.com/jchavannes/jgo/jutil"
 	"io"
 	"io/ioutil"
 	"math/rand"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"text/template"
 	"time"
@@ -110,7 +110,7 @@ var defaultFuncMap = template.FuncMap{
 		return time.Now().After(t)
 	},
 	"isNil": func(a interface{}) bool {
-		return a == nil || (reflect.ValueOf(a).Kind() == reflect.Ptr && reflect.ValueOf(a).IsNil())
+		return jutil.IsNil(a)
 	},
 }
 
