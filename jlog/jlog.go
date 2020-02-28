@@ -3,11 +3,12 @@ package jlog
 import (
 	"fmt"
 	"io"
+	"runtime/debug"
 	"time"
 )
 
 var (
-	logLevel LogLevel = DEFAULT
+	logLevel  LogLevel = DEFAULT
 	logWriter io.Writer
 )
 
@@ -17,6 +18,10 @@ func SetLogLevel(level LogLevel) {
 
 func SetLogWriter(writer io.Writer) {
 	logWriter = writer
+}
+
+func LogStack() {
+	Logf("Stack:\n%s", debug.Stack())
 }
 
 func Log(a ...interface{}) {
