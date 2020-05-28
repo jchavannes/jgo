@@ -18,6 +18,7 @@ type Page struct {
 	Url    string
 	Sel    string
 	ItmCnt int
+	Size   int
 	Params map[string]string
 	Hash   string
 }
@@ -72,7 +73,7 @@ func (p Page) IsFirstPage() bool {
 }
 
 func (p Page) IsLastPage() bool {
-	return p.ItmCnt < pageSize
+	return p.ItmCnt < p.Size
 }
 
 func (p Page) GetPrevUrl() string {
@@ -108,6 +109,7 @@ func GetPageWithSize(r *Response, url string, size int) *Page {
 	page := Page{
 		Page:   pageInput,
 		Offset: offset,
+		Size:   size,
 		Url:    url,
 		Params: map[string]string{},
 	}
