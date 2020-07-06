@@ -63,8 +63,12 @@ func (r *Response) SetCookie(key string, value string) {
 
 // Sets a new session cookie.
 func (r *Response) ResetOrCreateSession() {
+	r.SetSessionCookie(CreateToken())
+}
+
+func (r *Response) SetSessionCookie(cookie string) {
 	r.Session = Session{
-		CookieId: CreateToken(),
+		CookieId: cookie,
 	}
 	r.SetCookie(r.Server.GetCookieName(), r.Session.CookieId)
 }

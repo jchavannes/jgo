@@ -21,6 +21,10 @@ func GetIntFromString(s string) int {
 	return i
 }
 
+func GetInt32FromString(s string) int32 {
+	return int32(GetInt64FromString(s))
+}
+
 func GetInt64FromString(s string) int64 {
 	i, _ := strconv.ParseInt(s, 0, 64)
 	return i
@@ -32,6 +36,10 @@ func GetUIntFromString(s string) uint {
 
 func GetUInt16FromString(s string) uint16 {
 	return uint16(GetUInt64FromString(s))
+}
+
+func GetUInt32FromString(s string) uint32 {
+	return uint32(GetUInt64FromString(s))
 }
 
 func GetUInt64FromString(s string) uint64 {
