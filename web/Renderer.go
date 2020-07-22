@@ -83,6 +83,9 @@ var defaultFuncMap = template.FuncMap{
 	"formatInt": func(i int) string {
 		return jfmt.AddCommas(int64(i))
 	},
+	"formatInt32": func(i int32) string {
+		return jfmt.AddCommas(int64(i))
+	},
 	"getUnique": func(n int) string {
 		return jutil.GetUnique(n)
 	},

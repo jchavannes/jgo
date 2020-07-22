@@ -48,3 +48,12 @@ func MaxFloat64(x, y float64) float64 {
 	}
 	return x
 }
+
+func InUintSlice(needle uint, haystack []uint) bool {
+	for _, item := range haystack {
+		if item == needle {
+			return true
+		}
+	}
+	return false
+}
