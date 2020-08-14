@@ -21,8 +21,12 @@ type Renderer struct {
 }
 
 var defaultFuncMap = template.FuncMap{
-	"loop": func(n uint) []struct{} {
-		return make([]struct{}, n)
+	"loop": func(n uint) []int {
+		s := make([]int, n)
+		for i := range s {
+			s[i] = i
+		}
+		return s
 	},
 	"contains": func(s, substr string) bool {
 		return strings.Contains(s, substr)
