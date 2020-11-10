@@ -1,7 +1,9 @@
 package jutil
 
 import (
+	"fmt"
 	"strconv"
+	"unicode/utf8"
 )
 
 func ReverseStringSlice(slice []string) []string {
@@ -26,14 +28,36 @@ func StringInSlice(needle string, haystack []string) bool {
 	return false
 }
 
-func RemoveDupeStrings(strings []string) []string {
-	for i := 0; i < len(strings); i++ {
-		for g := i + 1; g < len(strings); g++ {
-			if strings[i] == strings[g] {
-				strings = append(strings[:g], strings[g+1:]...)
+func RemoveDupeStrings(stringList []string) []string {
+	for i := 0; i < len(stringList); i++ {
+		if stringList[i] == "" {
+			stringList = append(stringList[:i], stringList[i+1:]...)
+			i--
+			continue
+		}
+		for g := i + 1; g < len(stringList); g++ {
+			if stringList[i] == stringList[g] {
+				stringList = append(stringList[:g], stringList[g+1:]...)
 				g--
 			}
 		}
 	}
-	return strings
+	return stringList
+}
+
+// https://stackoverflow.com/a/20403220/744298
+func GetUtf8String(data []byte) string {
+	s := fmt.Sprintf("%s", data)
+	v := make([]rune, 0, len(s))
+	for i, r := range s {
+		if r == utf8.RuneError {
+			_, size := utf8.DecodeRuneInString(s[i:])
+			if size == 1 {
+				continue
+			}
+		}
+		v = append(v, r)
+	}
+	s = string(v)
+	return s
 }

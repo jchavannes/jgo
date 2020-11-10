@@ -1,8 +1,5 @@
 package jbuf
 
-type Item interface {
-}
-
 type Buffer struct {
 	new   chan interface{}
 	done  chan struct{}
