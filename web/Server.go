@@ -36,6 +36,7 @@ type Server struct {
 	UseSessions       bool
 	InsecureCookie    bool
 	CookiePrefix      string
+	NoLogStatic       bool
 	router            *mux.Router
 }
 
@@ -68,7 +69,9 @@ func (s *Server) addCatchAllRoute() {
 	s.router.PathPrefix("/").Handler(Handler{
 		Handler: func(w http.ResponseWriter, r *http.Request) {
 			response := getResponse(w, r, s, true)
-			defer response.LogComplete()
+			if !s.NoLogStatic {
+				defer response.LogComplete()
+			}
 			if response.ResponseCodeSet() {
 				return
 			}
@@ -125,7 +128,7 @@ func (s *Server) setupHandlers() {
 	s.router = mux.NewRouter()
 	s.router.StrictSlash(s.StrictSlash)
 	var showEachRoute = len(s.Routes) <= MaxRoutesDisplay
-	if ! showEachRoute {
+	if !showEachRoute {
 		jlog.Logf("Adding %d patterns to router.\n", len(s.Routes))
 	}
 	for _, routeTemp := range s.Routes {
@@ -144,11 +147,11 @@ func (s *Server) setupHandlers() {
 			if response.ResponseCodeSet() {
 				return
 			}
-			if route.CsrfProtect && ! response.IsValidCsrf() {
+			if route.CsrfProtect && !response.IsValidCsrf() {
 				response.SetResponseCode(http.StatusForbidden)
 				return
 			}
-			if s.IsLoggedIn != nil && route.NeedsLogin && ! s.IsLoggedIn(&response) {
+			if s.IsLoggedIn != nil && route.NeedsLogin && !s.IsLoggedIn(&response) {
 				return
 			}
 			defer func() {

@@ -20,6 +20,11 @@ func AddCommas(i int64) string {
 	return printer.Sprintf("%d", i)
 }
 
+func AddCommasInt(i int) string {
+	initPrinter()
+	return printer.Sprintf("%d", i)
+}
+
 func AddCommasUint(i uint64) string {
 	initPrinter()
 	return printer.Sprintf("%d", i)

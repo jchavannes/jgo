@@ -147,6 +147,14 @@ func AllZeros(b []byte) bool {
 	return true
 }
 
+func BytePad(b []byte, size int) []byte {
+	if len(b) < size {
+		var eb = make([]byte, size-len(b))
+		b = append(b, eb...)
+	}
+	return b
+}
+
 func GetSha256Hash(script []byte) []byte {
 	s := sha256.Sum256(script)
 	return s[:]

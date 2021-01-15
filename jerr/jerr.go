@@ -6,6 +6,7 @@ import (
 	"github.com/jchavannes/jgo/jutil"
 	"os"
 	"strings"
+	"time"
 )
 
 type JError struct {
@@ -42,10 +43,11 @@ func (e JError) getText(warn bool) string {
 	for i := len(e.Messages) - 1; i >= 0; i-- {
 		returnString += "\n " + boldStart + "[" + fmt.Sprintf("%d", len(e.Messages)-i) + "]" + formatEnd + " " + e.Messages[i]
 	}
+	timeStr := time.Now().Format("2006-01-02 15:04:05")
 	if warn {
-		return boldStart + colorYellow + "Warning:" + colorDefault + formatEnd + returnString
+		return boldStart + colorYellow + "Warning at" + timeStr + ":" + colorDefault + formatEnd + returnString
 	} else {
-		return boldStart + colorRed + "Error:" + colorDefault + formatEnd + returnString
+		return boldStart + colorRed + "Error at " + timeStr + ":" + colorDefault + formatEnd + returnString
 	}
 }
 

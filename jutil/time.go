@@ -122,3 +122,19 @@ func FirstDayOfISOWeek(year int, week int) time.Time {
 	}
 	return date
 }
+
+func GetTimeByte(t time.Time) []byte {
+	return GetInt64Data(t.Unix())
+}
+
+func GetByteTime(b []byte) time.Time {
+	return time.Unix(GetInt64(b), 0)
+}
+
+func GetDurationByte(d time.Duration) []byte {
+	return GetInt64Data(int64(d))
+}
+
+func GetByteDuration(b []byte) time.Duration {
+	return time.Duration(GetInt64(b))
+}
