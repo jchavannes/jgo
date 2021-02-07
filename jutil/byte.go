@@ -86,6 +86,14 @@ func GetUint32Data(i uint32) []byte {
 	return b
 }
 
+func GetInt(data []byte) int {
+	return int(GetUint32(data))
+}
+
+func GetIntData(i int) []byte {
+	return GetUint32Data(uint32(i))
+}
+
 func GetInt32(data []byte) int32 {
 	return int32(GetUint32(data))
 }
