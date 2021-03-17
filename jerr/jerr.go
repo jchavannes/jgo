@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jchavannes/jgo/jutil"
 	"os"
+	"runtime/debug"
 	"strings"
 	"time"
 )
@@ -27,6 +28,10 @@ func (e JError) Error() string {
 
 func (e JError) Print() {
 	fmt.Println(e.getText(false))
+}
+
+func (e JError) PrintWithStack() {
+	Getf(e, "Stack:\n%s", debug.Stack()).Print()
 }
 
 func (e JError) Warn() {
