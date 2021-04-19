@@ -168,3 +168,7 @@ func (r *Request) GetSourceIP() string {
 	host, _, _ := net.SplitHostPort(r.HttpRequest.RemoteAddr)
 	return host
 }
+
+func (r *Request) GetSourceIPAddr() net.IP {
+	return net.ParseIP(r.GetSourceIP())
+}
