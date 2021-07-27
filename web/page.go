@@ -35,7 +35,7 @@ func (p Page) Next() uint {
 }
 
 func (p Page) Needed() bool {
-	return ! p.IsFirstPage() || ! p.IsLastPage()
+	return !p.IsFirstPage() || !p.IsLastPage()
 }
 
 func (p Page) GetUrl(params map[string]string) string {
@@ -62,6 +62,12 @@ func (p Page) GetUrl(params map[string]string) string {
 		hash = fmt.Sprintf("#%s", p.Hash)
 	}
 	return fmt.Sprintf("%s?%s%s", p.Url, strings.Join(parts, "&"), hash)
+}
+
+func (p Page) GetParamUrl(key, value string) string {
+	return p.GetUrl(map[string]string{
+		key: value,
+	})
 }
 
 func (p Page) GetPageUrl(page uint) string {
