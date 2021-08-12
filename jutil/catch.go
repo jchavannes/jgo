@@ -4,9 +4,9 @@ type Catch struct {
 	Panic interface{}
 }
 
-func (r *Catch) Try(f func()) {
+func (c *Catch) Try(f func()) {
 	defer func() {
-		r.Panic = recover()
+		c.Panic = recover()
 	}()
 	f()
 }
