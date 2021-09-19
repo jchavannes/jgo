@@ -80,6 +80,10 @@ func GetUint32(data []byte) uint32 {
 	return binary.LittleEndian.Uint32(tmp)
 }
 
+func GetUintData(i uint) []byte {
+	return GetUint32Data(uint32(i))
+}
+
 func GetUint32Data(i uint32) []byte {
 	var b = make([]byte, 4)
 	binary.LittleEndian.PutUint32(b, i)
