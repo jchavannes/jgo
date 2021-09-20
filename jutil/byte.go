@@ -71,6 +71,16 @@ func GetUint64Data(i uint64) []byte {
 	return b
 }
 
+func GetUint16Data(i uint16) []byte {
+	b := make([]byte, 2)
+	binary.LittleEndian.PutUint16(b, i)
+	return b
+}
+
+func GetUint16(data []byte) uint16 {
+	return binary.LittleEndian.Uint16(data)
+}
+
 func GetUint(data []byte) uint {
 	return uint(GetUint32(data))
 }
@@ -171,6 +181,22 @@ func BytePad(b []byte, size int) []byte {
 		b = append(b, eb...)
 	}
 	return b
+}
+
+// BytePadPrefix will use 2 bytes for prefix, so input data must not be greater than size-2.
+func BytePadPrefix(b []byte, size int) []byte {
+	return append(GetUint16Data(uint16(len(b))), BytePad(b, size-2)...)
+}
+
+func ByteUnPad(b []byte) []byte {
+	if len(b) < 2 {
+		return nil
+	}
+	size := int(GetUint16(b[:2]))
+	if len(b) < size+2 {
+		return nil
+	}
+	return b[2:size+2]
 }
 
 func GetSha256Hash(script []byte) []byte {
