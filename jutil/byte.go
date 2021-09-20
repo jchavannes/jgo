@@ -66,7 +66,7 @@ func GetUint64(data []byte) uint64 {
 }
 
 func GetUint64Data(i uint64) []byte {
-	var b = make([]byte, 4)
+	var b = make([]byte, 8)
 	binary.BigEndian.PutUint64(b, i)
 	return b
 }
