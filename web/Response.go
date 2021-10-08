@@ -185,6 +185,7 @@ func (r *Response) GetWebSocket() (*Socket, error) {
 	if err != nil {
 		return nil, err
 	}
+	r.code = http.StatusSwitchingProtocols
 	return &Socket{ws: conn}, nil
 }
 
