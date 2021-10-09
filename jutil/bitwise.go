@@ -25,9 +25,9 @@ func (b *Bitwise) Toggle(index int, flag byte) {
 	(*b)[index] = (*b)[index] ^ flag
 }
 
-func (b *Bitwise) Has(index int, flag byte) bool {
-	if len(*b) < index {
+func (b Bitwise) Has(index int, flag byte) bool {
+	if len(b) <= index {
 		return false
 	}
-	return (*b)[index]&flag != 0
+	return b[index]&flag != 0
 }
