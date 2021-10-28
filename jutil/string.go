@@ -28,6 +28,17 @@ func StringInSlice(needle string, haystack []string) bool {
 	return false
 }
 
+func StringsInSlice(needles []string, haystack []string) bool {
+	for _, item := range haystack {
+		for _, needle := range needles {
+			if item == needle {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func RemoveDupeStrings(stringList []string) []string {
 	for i := 0; i < len(stringList); i++ {
 		if stringList[i] == "" {
