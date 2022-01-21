@@ -209,3 +209,11 @@ func GetByteMd5Int(b []byte) uint {
 	i := binary.BigEndian.Uint32(s[:8])
 	return uint(i)
 }
+
+func ByteGT(a, b []byte) bool {
+	return bytes.Compare(a, b) == 1
+}
+
+func ByteLT(a, b []byte) bool {
+	return bytes.Compare(a, b) == -1
+}
