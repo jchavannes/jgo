@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"crypto/sha256"
 	"encoding/binary"
+	"sort"
 )
 
 func ByteReverse(d []byte) []byte {
@@ -17,6 +18,9 @@ func ByteReverse(d []byte) []byte {
 }
 
 func RemoveDupesAndEmpties(data [][]byte) [][]byte {
+	sort.Slice(data, func(i, j int) bool {
+		return ByteLT(data[i], data[j])
+	})
 	for i := 0; i < len(data); i++ {
 		if len(data[i]) == 0 {
 			data = append(data[:i], data[i+1:]...)
@@ -27,6 +31,8 @@ func RemoveDupesAndEmpties(data [][]byte) [][]byte {
 			if bytes.Equal(data[i], data[g]) {
 				data = append(data[:g], data[g+1:]...)
 				g--
+			} else {
+				break
 			}
 		}
 	}
