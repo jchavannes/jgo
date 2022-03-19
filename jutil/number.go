@@ -57,3 +57,12 @@ func InUintSlice(needle uint, haystack []uint) bool {
 	}
 	return false
 }
+
+func InIntSlice(needle int, haystack []int) bool {
+	for _, item := range haystack {
+		if item == needle {
+			return true
+		}
+	}
+	return false
+}
