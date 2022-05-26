@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"crypto/sha256"
 	"encoding/binary"
+	"encoding/hex"
 	"sort"
 )
 
@@ -222,4 +223,12 @@ func ByteGT(a, b []byte) bool {
 
 func ByteLT(a, b []byte) bool {
 	return bytes.Compare(a, b) == -1
+}
+
+func ByteSliceStrings(b [][]byte) []string {
+	var s = make([]string, len(b))
+	for i := range b {
+		s[i] = hex.EncodeToString(b[i])
+	}
+	return s
 }
