@@ -43,6 +43,10 @@ func (e JError) Fatal() {
 	os.Exit(1)
 }
 
+func (e JError) Panic() {
+	panic(e.Error())
+}
+
 func (e JError) getText(warn bool) string {
 	returnString := ""
 	for i := len(e.Messages) - 1; i >= 0; i-- {
