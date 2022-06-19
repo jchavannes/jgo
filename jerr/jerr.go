@@ -44,7 +44,7 @@ func (e JError) Fatal() {
 }
 
 func (e JError) Panic() {
-	panic(e.Error())
+	panic(e)
 }
 
 func (e JError) getText(warn bool) string {
