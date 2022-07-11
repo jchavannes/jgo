@@ -18,6 +18,15 @@ func ByteReverse(d []byte) []byte {
 	return n
 }
 
+func ByteFlip(b []byte) []byte {
+	l := len(b)
+	var n = make([]byte, l)
+	for i := 0; i < l; i++ {
+		n[i] = b[i] ^ 0xff
+	}
+	return n
+}
+
 func RemoveDupesAndEmpties(data [][]byte) [][]byte {
 	sort.Slice(data, func(i, j int) bool {
 		return ByteLT(data[i], data[j])
@@ -203,7 +212,7 @@ func ByteUnPad(b []byte) []byte {
 	if len(b) < size+2 {
 		return nil
 	}
-	return b[2:size+2]
+	return b[2 : size+2]
 }
 
 func GetSha256Hash(script []byte) []byte {
