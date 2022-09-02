@@ -9,6 +9,7 @@ const (
 	DuplicateEntryErrorMessage    = "Duplicate entry"
 	InvalidConnectionErrorMessage = "invalid connection"
 	NoRowsInResultSetErrorMessage = "sql: no rows in result set"
+	DatabaseClosedErrorMessage    = "sql: database is closed"
 	RecordNotFoundErrorMessage    = "record not found"
 	LockTimeoutErrorMessage       = "Error 1205: Lock wait timeout exceeded; try restarting transaction"
 	TableDoesntExistErrorMessage  = "Error 1146: Table '"
@@ -28,7 +29,7 @@ func IsRecordNotFoundError(e error) bool {
 }
 
 func IsConnectionError(e error) bool {
-	return IsLockTimeoutError(e) || IsInvalidConnectionError(e)
+	return IsLockTimeoutError(e) || IsInvalidConnectionError(e) || IsDatabaseClosedError(e)
 }
 
 func IsLockTimeoutError(e error) bool {
@@ -41,6 +42,10 @@ func IsInvalidConnectionError(e error) bool {
 
 func IsNoRowsInResultSetError(e error) bool {
 	return jerr.HasError(e, NoRowsInResultSetErrorMessage)
+}
+
+func IsDatabaseClosedError(e error) bool {
+	return jerr.HasError(e, DatabaseClosedErrorMessage)
 }
 
 func IsTableDoesntExistError(e error) bool {
