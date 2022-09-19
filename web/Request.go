@@ -7,12 +7,18 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"net/http/httputil"
 	"strconv"
 	"strings"
 )
 
 type Request struct {
 	HttpRequest http.Request
+}
+
+func (r *Request) GetRaw() string {
+	raw, _ := httputil.DumpRequest(&r.HttpRequest, true)
+	return string(raw)
 }
 
 func (r *Request) GetCsrfToken() (string, error) {
