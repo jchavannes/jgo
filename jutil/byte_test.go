@@ -3,6 +3,7 @@ package jutil_test
 import (
 	"bytes"
 	"github.com/jchavannes/jgo/jerr"
+	"github.com/jchavannes/jgo/jlog"
 	"github.com/jchavannes/jgo/jutil"
 	"testing"
 )
@@ -40,4 +41,13 @@ func TestBytePadPrefix(t *testing.T) {
 	if !bytes.Equal(unpaddedInput, input) {
 		t.Error(jerr.Newf("error unpadded input does not match original input"))
 	}
+}
+
+func TestEndian(t *testing.T) {
+	const TestInt = 12345
+	jlog.Logf("test int: %d\n", TestInt)
+	jlog.Logf("GetUint32Data  : %x\n", jutil.GetUint32Data(TestInt))
+	jlog.Logf("GetInt32Data   : %x\n", jutil.GetInt32Data(TestInt))
+	jlog.Logf("GetInt64Data   : %x\n", jutil.GetInt64Data(TestInt))
+	jlog.Logf("GetInt64DataBig: %x\n", jutil.GetInt64DataBig(TestInt))
 }
