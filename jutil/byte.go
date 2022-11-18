@@ -71,14 +71,7 @@ func InByteArray(needle []byte, haystack [][]byte) bool {
 }
 
 func GetUint64(data []byte) uint64 {
-	const size = 8
-	tmp := make([]byte, size)
-	if len(data) > size {
-		tmp = data[len(data)-size:]
-	} else {
-		copy(tmp[size-len(data):], data)
-	}
-	return binary.BigEndian.Uint64(tmp)
+	return binary.BigEndian.Uint64(getSizedData(data, size8))
 }
 
 func GetUint64Data(i uint64) []byte {
@@ -101,15 +94,25 @@ func GetUint(data []byte) uint {
 	return uint(GetUint32(data))
 }
 
-func GetUint32(data []byte) uint32 {
-	const size = 4
+const size4 = 4
+const size8 = 8
+
+func getSizedData(data []byte, size int) []byte {
 	tmp := make([]byte, size)
 	if len(data) > size {
 		tmp = data[len(data)-size:]
 	} else {
 		copy(tmp[size-len(data):], data)
 	}
-	return binary.LittleEndian.Uint32(tmp)
+	return tmp
+}
+
+func GetUint32(data []byte) uint32 {
+	return binary.LittleEndian.Uint32(getSizedData(data, size4))
+}
+
+func GetUint32Big(data []byte) uint32 {
+	return binary.BigEndian.Uint32(getSizedData(data, size4))
 }
 
 func GetUintData(i uint) []byte {
