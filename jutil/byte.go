@@ -122,6 +122,12 @@ func GetUint32Data(i uint32) []byte {
 	return b
 }
 
+func GetUint32DataBig(i uint32) []byte {
+	var b = make([]byte, 4)
+	binary.BigEndian.PutUint32(b, i)
+	return b
+}
+
 func GetInt(data []byte) int {
 	return int(GetUint32(data))
 }
