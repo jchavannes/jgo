@@ -46,8 +46,9 @@ func TestBytePadPrefix(t *testing.T) {
 func TestEndian(t *testing.T) {
 	const TestInt = 12345
 	jlog.Logf("test int: %d\n", TestInt)
-	jlog.Logf("GetUint32Data  : %x\n", jutil.GetUint32Data(TestInt))
-	jlog.Logf("GetInt32Data   : %x\n", jutil.GetInt32Data(TestInt))
-	jlog.Logf("GetInt64Data   : %x\n", jutil.GetInt64Data(TestInt))
-	jlog.Logf("GetInt64DataBig: %x\n", jutil.GetInt64DataBig(TestInt))
+	jlog.Logf("GetUint32Data     : %x\n", jutil.GetUint32Data(TestInt))
+	jlog.Logf("GetInt32Data      : %x\n", jutil.GetInt32Data(TestInt))
+	jlog.Logf("GetInt64Data      : %x\n", jutil.GetInt64Data(TestInt))
+	jlog.Logf("GetInt64DataBig   : %x\n", jutil.GetInt64DataBig(TestInt))
+	jlog.Logf("GetInt64Data (rev): %x\n", jutil.ByteReverse(jutil.GetInt64Data(TestInt)))
 }
