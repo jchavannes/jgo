@@ -147,6 +147,14 @@ func GetInt32Data(i int32) []byte {
 	return GetUint32Data(uint32(i))
 }
 
+func GetInt32Big(data []byte) int32 {
+	return int32(GetUint32Big(data))
+}
+
+func GetInt32DataBig(i int32) []byte {
+	return GetUint32DataBig(uint32(i))
+}
+
 func GetInt64Data(i int64) []byte {
 	var b = make([]byte, 8)
 	binary.LittleEndian.PutUint64(b, uint64(i))
