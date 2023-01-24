@@ -107,6 +107,10 @@ func Newf(format string, a ...interface{}) JError {
 func Combine(errorArray ...error) JError {
 	var returnError JError
 	for _, err := range errorArray {
+		if jutil.IsNil(err) {
+			returnError.Messages = append(returnError.Messages, fmt.Sprintf("unknown error: %v", err))
+			continue
+		}
 		switch t := err.(type) {
 		case JError:
 			returnError.Messages = append(returnError.Messages, t.Messages...)
