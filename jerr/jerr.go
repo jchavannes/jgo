@@ -108,7 +108,7 @@ func Combine(errorArray ...error) JError {
 	var returnError JError
 	for _, err := range errorArray {
 		if jutil.IsNil(err) {
-			returnError.Messages = append(returnError.Messages, fmt.Sprintf("unknown error: %v", err))
+			returnError.Messages = append(returnError.Messages, fmt.Sprintf("error nil for combine: %T", err))
 			continue
 		}
 		switch t := err.(type) {
