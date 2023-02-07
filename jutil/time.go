@@ -131,6 +131,14 @@ func GetByteTime(b []byte) time.Time {
 	return time.Unix(GetInt64(b), 0)
 }
 
+func GetTimeByteBig(t time.Time) []byte {
+	return GetInt64DataBig(t.Unix())
+}
+
+func GetByteTimeBig(b []byte) time.Time {
+	return time.Unix(GetInt64Big(b), 0)
+}
+
 func GetTimeByteNano(t time.Time) []byte {
 	return GetInt64Data(t.UnixNano())
 }
