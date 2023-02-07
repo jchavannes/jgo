@@ -154,3 +154,7 @@ func GetDurationByte(d time.Duration) []byte {
 func GetByteDuration(b []byte) time.Duration {
 	return time.Duration(GetInt64(b))
 }
+
+func IsTimeZero(t time.Time) bool {
+	return t.Unix() == 0 || t.IsZero()
+}
