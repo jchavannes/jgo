@@ -8,7 +8,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/jchavannes/gorm v0.0.0-20190714222221-6e209826f9bd
 	github.com/jinzhu/gorm v1.9.16
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
-	golang.org/x/net v0.0.0-20220722155237-a158d28d115b
-	golang.org/x/text v0.3.8
+	golang.org/x/crypto v0.1.0
+	golang.org/x/net v0.1.0
+	golang.org/x/text v0.4.0
 )
