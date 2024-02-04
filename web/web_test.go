@@ -6,7 +6,7 @@ import (
 )
 
 func ExampleResponse_SetResponseCode() {
-	web.Route{
+	_ = web.Route{
 		Pattern: "/",
 		Handler: func(r *web.Response) {
 			r.SetResponseCode(http.StatusNotFound)

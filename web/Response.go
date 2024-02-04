@@ -198,11 +198,18 @@ func (r *Response) Error(err error, responseCode int) {
 	}
 }
 
+const LogCompleteExtraMessageHelperKey = "LogCompleteExtraMessage"
+
 func (r *Response) LogComplete() {
-	jlog.Logf("%s %s %s %d\n",
+	var extraMessage string
+	if val, ok := r.Helper[LogCompleteExtraMessageHelperKey]; ok {
+		extraMessage = fmt.Sprintf(" (%s)", val)
+	}
+	jlog.Logf("%s %s %s %d%s\n",
 		jutil.ShortHash(r.Session.CookieId),
 		r.Request.GetSourceIP(),
 		r.Request.HttpRequest.URL.Path,
 		r.GetResponseCode(),
+		extraMessage,
 	)
 }
