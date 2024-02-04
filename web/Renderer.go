@@ -148,6 +148,7 @@ func (r *Renderer) SetFuncMap(funcMap map[string]interface{}) {
 }
 
 const UnableToFindTemplateErrorMsg = "unable to find template"
+const WriteTimeoutErrorMsgPart = "write: broken pipe"
 
 func (r *Renderer) Render(names []string, writer io.Writer, data interface{}) error {
 	t, err := r.getTemplate()

@@ -165,6 +165,8 @@ func (r *Response) RenderTemplate(templateName string) error {
 		err = renderer.Render([]string{
 			"404.html",
 		}, r.Writer, r.Helper)
+	} else if jerr.HasErrorPart(err, WriteTimeoutErrorMsgPart) {
+		r.code = http.StatusRequestTimeout
 	} else if err != nil {
 		r.Error(jerr.Get("error rendering template", err), http.StatusInternalServerError)
 	}
