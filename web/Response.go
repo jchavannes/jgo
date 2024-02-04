@@ -203,7 +203,7 @@ const LogCompleteExtraMessageHelperKey = "LogCompleteExtraMessage"
 func (r *Response) LogComplete() {
 	var extraMessage string
 	if val, ok := r.Helper[LogCompleteExtraMessageHelperKey]; ok {
-		extraMessage = fmt.Sprintf(" (%s)", val)
+		extraMessage = fmt.Sprintf(" %s", val)
 	}
 	jlog.Logf("%s %s %s %d%s\n",
 		jutil.ShortHash(r.Session.CookieId),
