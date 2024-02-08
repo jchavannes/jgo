@@ -144,6 +144,9 @@ func (s *Server) setupHandlers() {
 			response := getResponse(w, r, s, false)
 			response.Pattern = route.Pattern
 			defer response.LogComplete()
+			if s.PostHandler != nil {
+				defer s.PostHandler(&response)
+			}
 			if response.ResponseCodeSet() {
 				return
 			}
@@ -165,9 +168,6 @@ func (s *Server) setupHandlers() {
 				}
 			}()
 			route.Handler(&response)
-			if s.PostHandler != nil {
-				s.PostHandler(&response)
-			}
 		})
 	}
 }
