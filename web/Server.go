@@ -69,9 +69,12 @@ func (s *Server) addCatchAllRoute() {
 	s.router.PathPrefix("/").Handler(Handler{
 		Handler: func(w http.ResponseWriter, r *http.Request) {
 			response := getResponse(w, r, s, true)
-			if !s.NoLogStatic {
-				defer response.LogComplete()
-			}
+			var notStatic bool
+			defer func() {
+				if notStatic || !s.NoLogStatic {
+					response.LogComplete()
+				}
+			}()
 			if response.ResponseCodeSet() {
 				return
 			}
@@ -82,13 +85,8 @@ func (s *Server) addCatchAllRoute() {
 				}
 				for _, fileType := range allowedFileTypes {
 					if strings.HasSuffix(response.Request.HttpRequest.URL.Path, "."+fileType) || fileType == "*" {
-						if fileType == "css" {
-							var re = regexp.MustCompile(`(.*)-[\d]+(\.css)`)
-							path := re.ReplaceAllString(response.Request.HttpRequest.URL.Path, `$1$2`)
-							http.ServeFile(w, r, s.StaticFilesDir+path)
-							return
-						} else if fileType == "js" {
-							var re = regexp.MustCompile(`(.*)-[\d]+(\.js)`)
+						if fileType == "css" || fileType == "js" {
+							var re = regexp.MustCompile(`(.*)-[\d]+(\.css|\.js)`)
 							path := re.ReplaceAllString(response.Request.HttpRequest.URL.Path, `$1$2`)
 							http.ServeFile(w, r, s.StaticFilesDir+path)
 							return
@@ -98,7 +96,7 @@ func (s *Server) addCatchAllRoute() {
 					}
 				}
 			}
-
+			notStatic = true
 			if len(s.TemplatesDir) > 0 && s.UseAutoRender {
 				templateName := response.Request.GetPotentialFilename()
 
