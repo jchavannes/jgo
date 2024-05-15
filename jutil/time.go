@@ -166,3 +166,12 @@ func GetByteDuration(b []byte) time.Duration {
 func IsTimeZero(t time.Time) bool {
 	return t.Unix() == 0 || t.IsZero()
 }
+
+// TimeRoundSeconds could use Golang's built-in time.Round function
+// but want to be explicit so easy to replicate in other languages
+func TimeRoundSeconds(t time.Time, seconds uint) time.Time {
+	if seconds == 0 {
+		seconds = 1
+	}
+	return time.Unix(t.Unix()/int64(seconds)*int64(seconds), 0)
+}
