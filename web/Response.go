@@ -5,15 +5,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/jchavannes/jgo/jerr"
-	"github.com/jchavannes/jgo/jlog"
-	"github.com/jchavannes/jgo/jutil"
 	"html/template"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/gorilla/websocket"
+	"github.com/jchavannes/jgo/jerr"
+	"github.com/jchavannes/jgo/jlog"
+	"github.com/jchavannes/jgo/jutil"
 )
 
 // Response objects are passed to handlers to respond to requests.
@@ -123,6 +124,7 @@ func (r *Response) WriteJson(i interface{}, pretty bool) {
 		text, _ = json.Marshal(i)
 	}
 	r.SetHeader("Content-Type", "application/json")
+	r.SetResponseCode(http.StatusOK)
 	r.Write(string(text))
 }
 
