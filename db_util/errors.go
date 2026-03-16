@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/jchavannes/jgo/jerr"
+	"gorm.io/gorm"
 )
 
 const (
@@ -29,7 +30,7 @@ func IsDuplicateEntryError(e error) bool {
 }
 
 func IsRecordNotFoundError(e error) bool {
-	return jerr.HasError(e, RecordNotFoundErrorMessage)
+	return jerr.HasError(e, RecordNotFoundErrorMessage) || errors.Is(e, gorm.ErrRecordNotFound)
 }
 
 func IsConnectionError(e error) bool {

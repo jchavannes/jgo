@@ -1,7 +1,7 @@
 package db_util
 
 import (
-	"github.com/jchavannes/gorm"
+	"gorm.io/gorm"
 	"github.com/jchavannes/jgo/jerr"
 )
 
