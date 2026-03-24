@@ -1,6 +1,10 @@
 package db_util
 
-import "github.com/jchavannes/jgo/jerr"
+import (
+	"reflect"
+
+	"github.com/jchavannes/jgo/jerr"
+)
 
 func Find(_db DB, out interface{}, where ...interface{}) error {
 	db, err := _db.Get()
@@ -10,6 +14,9 @@ func Find(_db DB, out interface{}, where ...interface{}) error {
 	result := db.Find(out, where...)
 	if result.Error != nil {
 		return jerr.Get("error running query", result.Error)
+	}
+	if result.RowsAffected == 0 && !isSlice(out) {
+		return RecordNotFoundError
 	}
 	return nil
 }
@@ -26,7 +33,18 @@ func FindPreload(_db DB, columns []string, out interface{}, where ...interface{}
 	if result.Error != nil {
 		return jerr.Get("error running query", result.Error)
 	}
+	if result.RowsAffected == 0 && !isSlice(out) {
+		return RecordNotFoundError
+	}
 	return nil
+}
+
+func isSlice(v interface{}) bool {
+	rt := reflect.TypeOf(v)
+	for rt.Kind() == reflect.Ptr {
+		rt = rt.Elem()
+	}
+	return rt.Kind() == reflect.Slice
 }
 
 func First(_db DB, out interface{}, where ...interface{}) error {
