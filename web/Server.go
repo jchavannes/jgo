@@ -37,6 +37,7 @@ type Server struct {
 	InsecureCookie    bool
 	CookiePrefix      string
 	NoLogStatic       bool
+	LogQueryParams    bool
 	router            *mux.Router
 }
 

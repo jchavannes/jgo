@@ -209,10 +209,16 @@ func (r *Response) LogComplete() {
 	if val, ok := r.Helper[LogCompleteExtraMessageHelperKey]; ok {
 		extraMessage = fmt.Sprintf(" %s", val)
 	}
+	var urlPath string
+	if r.Server.LogQueryParams {
+		urlPath = r.Request.GetURI()
+	} else {
+		urlPath = r.Request.HttpRequest.URL.Path
+	}
 	jlog.Logf("%s %s %s %d%s\n",
 		jutil.ShortHash(r.Session.CookieId),
 		r.Request.GetSourceIP(),
-		r.Request.HttpRequest.URL.Path,
+		urlPath,
 		r.GetResponseCode(),
 		extraMessage,
 	)
