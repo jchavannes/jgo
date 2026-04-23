@@ -1,58 +1,66 @@
 package pubsub
 
 import (
-	"github.com/jchavannes/jgo/jerr"
+	"sync"
 	"time"
+
+	"github.com/jchavannes/jgo/jerr"
 )
 
 type PubSub struct {
-	Subscribers []*Subscriber
-	Events      []*Event
+	mu          sync.Mutex
+	subscribers []*Subscriber
+	events      []*Event
 
 	SubscriberTimeout time.Duration
 	EventTimeout      time.Duration
 }
 
 func (p *PubSub) Subscribe(eventId string) *Subscriber {
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	var subscriber = &Subscriber{
 		EventId: eventId,
 		Time:    time.Now(),
-		Listen:  make(chan error),
+		Listen:  make(chan error, 1),
 	}
-	p.Subscribers = append(p.Subscribers, subscriber)
-	for _, event := range p.Events {
+	for _, event := range p.events {
 		if event.Id == eventId {
-			go func() { subscriber.Listen <- nil }()
-			p.Unsubscribe(subscriber)
+			subscriber.Listen <- nil
+			return subscriber
 		}
 	}
+	p.subscribers = append(p.subscribers, subscriber)
 	return subscriber
-
 }
 
 func (p *PubSub) Unsubscribe(subscriber *Subscriber) {
-	for i, activeSubscriber := range p.Subscribers {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	for i, activeSubscriber := range p.subscribers {
 		if activeSubscriber == subscriber {
-			p.Subscribers = append(p.Subscribers[:i], p.Subscribers[i+1:]...)
+			p.subscribers = append(p.subscribers[:i], p.subscribers[i+1:]...)
 			return
 		}
 	}
 }
 
 func (p *PubSub) Publish(eventId string) {
-	for _, event := range p.Events {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	for _, event := range p.events {
 		if event.Id == eventId {
 			return
 		}
 	}
-	p.Events = append(p.Events, &Event{
+	p.events = append(p.events, &Event{
 		Id:   eventId,
 		Time: time.Now(),
 	})
-	for i := 0; i < len(p.Subscribers); i++ {
-		if p.Subscribers[i].EventId == eventId {
-			go func(sub *Subscriber) { sub.Listen <- nil }(p.Subscribers[i])
-			p.Subscribers = append(p.Subscribers[:i], p.Subscribers[i+1:]...)
+	for i := 0; i < len(p.subscribers); i++ {
+		if p.subscribers[i].EventId == eventId {
+			p.subscribers[i].Listen <- nil
+			p.subscribers = append(p.subscribers[:i], p.subscribers[i+1:]...)
 			i--
 		}
 	}
@@ -68,19 +76,21 @@ func (p *PubSub) initExpireChecks() {
 }
 
 func (p *PubSub) checkExpired() {
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	eventTimeout := time.Now().Add(-p.EventTimeout)
-	for i := 0; i < len(p.Events); i++ {
-		if p.Events[i].Time.Before(eventTimeout) {
-			p.Events = append(p.Events[:i], p.Events[i+1:]...)
+	for i := 0; i < len(p.events); i++ {
+		if p.events[i].Time.Before(eventTimeout) {
+			p.events = append(p.events[:i], p.events[i+1:]...)
 			i--
 		}
 	}
 	if p.SubscriberTimeout > 0 {
 		timeout := time.Now().Add(-p.SubscriberTimeout)
-		for i := 0; i < len(p.Subscribers); i++ {
-			if p.Subscribers[i].Time.Before(timeout) {
-				go func(sub *Subscriber) { sub.Listen <- jerr.New("error pub sub timeout reached") }(p.Subscribers[i])
-				p.Subscribers = append(p.Subscribers[:i], p.Subscribers[i+1:]...)
+		for i := 0; i < len(p.subscribers); i++ {
+			if p.subscribers[i].Time.Before(timeout) {
+				p.subscribers[i].Listen <- jerr.New("error pub sub timeout reached")
+				p.subscribers = append(p.subscribers[:i], p.subscribers[i+1:]...)
 				i--
 			}
 		}

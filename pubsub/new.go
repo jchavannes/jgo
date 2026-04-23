@@ -15,7 +15,9 @@ type Event struct {
 type Subscriber struct {
 	EventId string
 	Time    time.Time
-	Listen  chan error
+	// Listen is buffered (size 1) so PubSub can send notifications while holding its mutex
+	// without blocking. Each subscriber receives at most one notification before removal.
+	Listen chan error
 }
 
 func New() *PubSub {
