@@ -1,15 +1,16 @@
 package web
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/jchavannes/jgo/jerr"
-	"github.com/jchavannes/jgo/jlog"
 	"net/http"
 	"regexp"
 	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gorilla/mux"
+	"github.com/jchavannes/jgo/jerr"
+	"github.com/jchavannes/jgo/jlog"
 )
 
 // Name of cookie used for sessions.
@@ -26,6 +27,7 @@ type Server struct {
 	PreHandler        func(*Response)
 	PostHandler       func(*Response)
 	ErrorHandler      func(*Response, error)
+	UnauthedHandler   func(*Response)
 	GetCsrfToken      func(string) string
 	Routes            []Route
 	SessionKey        string
@@ -70,6 +72,7 @@ func (s *Server) addCatchAllRoute() {
 	s.router.PathPrefix("/").Handler(Handler{
 		Handler: func(w http.ResponseWriter, r *http.Request) {
 			response := getResponse(w, r, s, true)
+			response.runPreHandler()
 			var notStatic bool
 			defer func() {
 				if notStatic || !s.NoLogStatic {
@@ -146,6 +149,11 @@ func (s *Server) setupHandlers() {
 			if s.PostHandler != nil {
 				defer s.PostHandler(&response)
 			}
+			if route.NeedsLogin && response.Session.IsNew && s.UnauthedHandler != nil {
+				s.UnauthedHandler(&response)
+				return
+			}
+			response.runPreHandler()
 			if response.ResponseCodeSet() {
 				return
 			}
@@ -191,12 +199,17 @@ func getResponse(w http.ResponseWriter, r *http.Request, s *Server, static bool)
 	response.Helper["URI"] = r.RequestURI
 	if s.UseSessions {
 		response.InitSession()
-		response.Helper["CsrfToken"] = response.GetCsrfToken()
-	}
-	if s.PreHandler != nil {
-		s.PreHandler(&response)
 	}
 	return response
+}
+
+func (r *Response) runPreHandler() {
+	if r.Server.PreHandler != nil {
+		r.Server.PreHandler(r)
+	}
+	if r.Server.UseSessions && !r.ResponseCodeSet() {
+		r.Helper["CsrfToken"] = r.GetCsrfToken()
+	}
 }
 
 func (s *Server) startServer() error {
