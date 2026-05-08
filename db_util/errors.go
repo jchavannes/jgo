@@ -34,7 +34,7 @@ func IsRecordNotFoundError(e error) bool {
 }
 
 func IsConnectionError(e error) bool {
-	return IsLockTimeoutError(e) || IsInvalidConnectionError(e) || IsDatabaseClosedError(e) ||
+	return IsInvalidConnectionError(e) || IsDatabaseClosedError(e) ||
 		IsTooManyConnectionsError(e) || IsServerShutdownError(e) || IsBadConnectionError(e)
 }
 
