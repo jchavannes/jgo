@@ -1,3 +1,4 @@
 /vendor/*/
 /example/jgo-example.db
 /.idea
+/.claude

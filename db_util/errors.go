@@ -14,7 +14,7 @@ const (
 	NoRowsInResultSetErrorMessage  = "sql: no rows in result set"
 	DatabaseClosedErrorMessage     = "sql: database is closed"
 	RecordNotFoundErrorMessage     = "record not found"
-	LockTimeoutErrorMessage        = "Error 1205: Lock wait timeout exceeded; try restarting transaction"
+	LockTimeoutErrorMessage        = "Lock wait timeout exceeded; try restarting transaction"
 	TooManyConnectionsErrorMessage = "Error 1040: Too many connections"
 	ServerShutdownErrorMessage     = "Error 1053: Server shutdown in progress"
 	TableDoesntExistErrorMessage   = "Error 1146: Table '"
@@ -39,7 +39,7 @@ func IsConnectionError(e error) bool {
 }
 
 func IsLockTimeoutError(e error) bool {
-	return jerr.HasError(e, LockTimeoutErrorMessage)
+	return jerr.HasErrorPart(e, LockTimeoutErrorMessage)
 }
 
 func IsInvalidConnectionError(e error) bool {
