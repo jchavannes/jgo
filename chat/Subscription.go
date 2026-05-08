@@ -37,7 +37,7 @@ func (s *Subscription) SendMessage(message *Message) {
 	}
 	for _, subscription := range chatroom.subscriptions {
 		go func(subscription *Subscription) {
-			fmt.Printf("Sending message (%s) to subscriber (Subscription.Id: %d).\n", message, subscription.Id)
+			fmt.Printf("Sending message (%s) to subscriber (Subscription.Id: %d).\n", message.Message, subscription.Id)
 			subscription.Messages <- message
 		}(subscription)
 	}

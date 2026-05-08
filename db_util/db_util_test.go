@@ -297,6 +297,18 @@ func TestIsDuplicateEntryError(t *testing.T) {
 	}
 }
 
+func TestIsLockTimeoutError(t *testing.T) {
+	if !IsLockTimeoutError(errors.New("Error 1205 (HY000): Lock wait timeout exceeded; try restarting transaction")) {
+		t.Fatal("expected MySQL 8 lock timeout format to be detected")
+	}
+	if !IsLockTimeoutError(errors.New("Error 1205: Lock wait timeout exceeded; try restarting transaction")) {
+		t.Fatal("expected legacy lock timeout format to be detected")
+	}
+	if IsLockTimeoutError(errors.New("some other error")) {
+		t.Fatal("expected false for unrelated error")
+	}
+}
+
 func TestFirstRecordNotFound(t *testing.T) {
 	tdb := setupTestDB(t)
 	var item TestItem
