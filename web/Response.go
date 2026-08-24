@@ -84,6 +84,7 @@ func (r *Response) InitSession() {
 		}
 	} else {
 		r.ResetOrCreateSession()
+		r.Session.IsNew = true
 	}
 }
 

@@ -8,6 +8,7 @@ import (
 
 type Session struct {
 	CookieId string
+	IsNew    bool
 }
 
 var csrfTokens map[string]string
